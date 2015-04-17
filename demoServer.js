@@ -3,7 +3,7 @@
 
 var url    = require('url');
 var http   = require('http');
-
+var net = require('net');
 var io     = require('socket.io').listen(8888);
 
 function checkBlobJSON(data)
@@ -26,6 +26,19 @@ function checkBlobJSON(data)
 
 	return true
 }
+
+net.createServer(function (socket) { 
+
+// Handle incoming messages from clients.
+socket.on('data', function (data) {
+    Console.log(data);
+});
+ 
+// Remove the client from the list when it leaves
+socket.on('end', function () {
+Console.log("client disconnected");
+});
+}).listen(9999);
 
 // A room for people who are listening for data
 var BLOBROOM = "BLOBROOM";
