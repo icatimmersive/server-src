@@ -31,12 +31,12 @@ net.createServer(function (socket) {
 
 // Handle incoming messages from clients.
 socket.on('data', function (data) {
-    Console.log(data);
+    console.log(data.toString());
 });
  
 // Remove the client from the list when it leaves
 socket.on('end', function () {
-Console.log("client disconnected");
+    console.log("client disconnected");
 });
 }).listen(9999);
 
