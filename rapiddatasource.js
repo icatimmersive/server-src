@@ -76,5 +76,5 @@ socket.on('connect', function()
 			socket.emit('update', updateData);
 		}
 		else{console.log(JSON.stringify(updateData));}
-	}, 200);
+	}, 67);
 });
