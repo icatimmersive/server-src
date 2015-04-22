@@ -29,6 +29,7 @@ function checkBlobJSON(data)
 
 // A room for people who are listening for data
 var BLOBROOM = "BLOBROOM";
+var WEBSOCKET;
 
 // Socket.io callback functions
 var startCallback = function(data) {
@@ -40,12 +41,12 @@ var startCallback = function(data) {
     }
     else if(data.connectionType === "LISTENER") {
         console.log("New listener with id: " + data.id);
-        socket.join(BLOBROOM);
+        WEBSOCKET.join(BLOBROOM);
     }
     else if(data.connectionType === "TWOWAY") {
         console.log("New two way connection with id: " + data.id);
         io.sockets.in(BLOBROOM).emit("addSource", data);
-        socket.join(BLOBROOM);
+        WEBSOCKET.join(BLOBROOM);
     }
     else {
         console.log("Invalid connection type: " + JSON.stringify(data))
@@ -111,14 +112,17 @@ var disconnectCallback = function() {
 // TCP socket definitions
 net.createServer(function (tcpSocket) { 
     // Hook this data source into the system
-    tcpSocket.on('connect' function() {
+    tcpSocket.on('connect', function() {
         console.log("TCP client connected");
         startCallback({"connectionType": "DATASOURCE", "id": "TCP"});
     });
 
     // Handle incoming messages from clients.
     tcpSocket.on('data', function (data) {
-        var parsedData = JSON.parse(data);
+        var strSplit = data.toString().split("&");
+	for (var s in strSplit)
+        {
+        var parsedData = JSON.parse(s);
 
         console.log(data.toString() + "\n");
         if (parsedData.age === "NEW") {
@@ -130,6 +134,7 @@ net.createServer(function (tcpSocket) {
         else {
             console.log("Invalid age parameter");
         }
+        }
     });
      
     // Remove the client from the list when it leaves
@@ -140,6 +145,7 @@ net.createServer(function (tcpSocket) {
 
 // Socket.io definitions
 io.sockets.on('connection', function(webSocket) {
+    WEBSOCKET = webSocket;
 
     webSocket.on("start", startCallback);
 
