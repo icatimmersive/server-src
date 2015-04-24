@@ -1,9 +1,6 @@
-// Prototype server implementation for mirror worlds demo
-// on Friday, February 20
-
 var url    = require('url');
 var http   = require('http');
-var net = require('net');
+var net    = require('net');
 var io     = require('socket.io').listen(8888);
 
 function checkBlobJSON(data)
@@ -26,6 +23,58 @@ function checkBlobJSON(data)
 
 	return true
 }
+
+// TCP socket definitions
+net.createServer(function (tcpSocket) { 
+    // Hook this data source into the system
+    tcpSocket.on('connect', function() {
+        console.log("TCP client connected");
+        startCallback({"connectionType": "DATASOURCE", "id": "TCP"});
+    });
+
+    // Handle incoming messages from clients.
+    tcpSocket.on('data', function (data) {
+        var dataSplit = data.toString().split("&");
+
+        for (var s in dataSplit) {
+            var parsedData = JSON.parse(s);
+
+            console.log(data.toString() + "\n");
+            
+            for (var d in parsedData) {
+                if (d.age === "NEW") {
+                    newCallback(d);
+                }
+                else if (d.age === "OLD") {
+                    updateCallback(d);
+                }
+                else {
+                    console.log("Invalid age parameter");
+                }
+            }
+        }
+    });
+     
+    // Remove the client from the list when it leaves
+    tcpSocket.on('end', function () {
+        console.log("TCP client disconnected");
+    });
+}).listen(9999);
+
+// Socket.io definitions
+io.sockets.on('connection', function(webSocket) {
+    WEBSOCKET = webSocket;
+
+    webSocket.on("start", startCallback);
+
+    webSocket.on("new", newCallback);
+
+    webSocket.on("update", updateCallback);
+
+    webSocket.on("remove", removeCallback);
+
+    webSocket.on("disconnect", disconnectCallback);
+});
 
 // A room for people who are listening for data
 var BLOBROOM = "BLOBROOM";
@@ -108,52 +157,3 @@ var removeCallback = function(data) {
 var disconnectCallback = function() {
     console.log('disconnected')
 };
-
-// TCP socket definitions
-net.createServer(function (tcpSocket) { 
-    // Hook this data source into the system
-    tcpSocket.on('connect', function() {
-        console.log("TCP client connected");
-        startCallback({"connectionType": "DATASOURCE", "id": "TCP"});
-    });
-
-    // Handle incoming messages from clients.
-    tcpSocket.on('data', function (data) {
-        var strSplit = data.toString().split("&");
-	for (var s in strSplit)
-        {
-        var parsedData = JSON.parse(s);
-
-        console.log(data.toString() + "\n");
-        if (parsedData.age === "NEW") {
-            newCallback(parsedData);
-        }
-        else if (parsedData.age === "OLD") {
-            updateCallback(parsedData);
-        }
-        else {
-            console.log("Invalid age parameter");
-        }
-        }
-    });
-     
-    // Remove the client from the list when it leaves
-    tcpSocket.on('end', function () {
-        console.log("TCP client disconnected");
-    });
-}).listen(9999);
-
-// Socket.io definitions
-io.sockets.on('connection', function(webSocket) {
-    WEBSOCKET = webSocket;
-
-    webSocket.on("start", startCallback);
-
-    webSocket.on("new", newCallback);
-
-    webSocket.on("update", updateCallback);
-
-    webSocket.on("remove", removeCallback);
-
-    webSocket.on("disconnect", disconnectCallback);
-});
