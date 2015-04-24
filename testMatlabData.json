@@ -21,8 +21,8 @@
 		"boundingBox": {
 			"x": 1.0,
 			"y": 2.0,
-			"z": 3.0,
-			"theta": 0.0
+			"width": 5,
+			"height": 5
 			}
 		}, {
 		"age": "NEW", 
@@ -45,8 +45,8 @@
 		"boundingBox": {
 			"x": 1.0,
 			"y": 2.0,
-			"z": 3.0,
-			"theta": 0.0
+			"width": 5,
+			"height": 5
 			}
 		} ],
 	"OLDDATA": []
@@ -75,8 +75,8 @@
 		"boundingBox": {
 			"x": 1.0,
 			"y": 2.0,
-			"z": 3.0,
-			"theta": 0.0
+			"width": 5,
+			"height": 5
 			}
 		}, {
 		"age": "OLD", 
@@ -99,8 +99,8 @@
 		"boundingBox": {
 			"x": 1.0,
 			"y": 2.0,
-			"z": 3.0,
-			"theta": 0.0
+			"width": 5,
+			"height": 5
 			}
 		} ]
 }

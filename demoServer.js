@@ -3,25 +3,37 @@ var http   = require('http');
 var net    = require('net');
 var io     = require('socket.io').listen(8888);
 
-function checkBlobJSON(data)
-{
-	if (data.id == null) {return false};
-	if (   data.origin.x == null
-		|| data.origin.y == null
-		|| data.origin.z == null) {return false};
-	if (   data.orientation.x == null
-		|| data.orientation.y == null
-		|| data.orientation.z == null
-		|| data.orientation.theta == null) {return false};
-	if (data.source == null) {return false};
-	if (data.updatedTime == null) {return false};
-	if (data.creationTime == null) {return false};
-	if (data.boundingBox.x == null
-		|| data.boundingBox.y == null
-		|| data.boundingBox.width == null
-		|| data.boundingBox.height == null) {return false};
-
+function checkTCPJSON(data) {
+	if(data.NEWDATA == null) {return false;}
+    if(data.OLDDATA == null) {return false;}
 	return true
+}
+
+function checkBlobJSON(data) {
+    if (data.age == null) {return false;}
+    if (data.connectionType == null) {return false;}
+    if (data.id == null) {return false;}
+
+    if (data.origin == null) {return false;}
+    if (data.origin.x == null) {return false;}
+    if (data.origin.y == null) {return false;}
+    if (data.origin.z == null) {return false;}
+
+    if (data.orientation == null) {return false;}
+    if (data.orientation.x == null) {return false;}
+    if (data.orientation.y == null) {return false;}
+    if (data.orientation.z == null) {return false;}
+    if (data.orientation.theta == null) {return false;}
+
+    if (data.source == null) {return false;}
+    if (data.updateTime == null) {return false;}
+    if (data.creationTime == null) {return false;}
+
+    if (data.boundingBox == null) {return false;}
+    if (data.boundingBox.x == null) {return false;}
+    if (data.boundingBox.y == null) {return false;}
+    if (data.boundingBox.width == null) {return false;}
+    if (data.boundingBox.height == null) {return false;}
 }
 
 // TCP socket definitions
@@ -41,15 +53,14 @@ net.createServer(function (tcpSocket) {
 
             console.log(data.toString() + "\n");
             
-            for (var d in parsedData) {
-                if (d.age === "NEW") {
-                    newCallback(d);
+            if(checkTCPJSON(parsedData))
+            {
+                for (var nd in parsedData.NEWDATA) {
+                    newCallback(nd);
                 }
-                else if (d.age === "OLD") {
-                    updateCallback(d);
-                }
-                else {
-                    console.log("Invalid age parameter");
+
+                for (var od in parsedData.OLDDATA) {
+                    updateCallback(od);
                 }
             }
         }
@@ -82,23 +93,30 @@ var WEBSOCKET;
 
 // Socket.io callback functions
 var startCallback = function(data) {
-    console.log("Starting new connection: " + data);
+    if (checkBlobJSON(data) == true)
+    {
+        console.log("Starting new connection: " + data);
 
-    if(data.connectionType === "DATASOURCE") {
-        console.log("New blob with id: " + data.id);
-        io.sockets.in(BLOBROOM).emit("addSource", data);
+        if(data.connectionType === "DATASOURCE") {
+            console.log("New blob with id: " + data.id);
+            io.sockets.in(BLOBROOM).emit("addSource", data);
+        }
+        else if(data.connectionType === "LISTENER") {
+            console.log("New listener with id: " + data.id);
+            WEBSOCKET.join(BLOBROOM);
+        }
+        else if(data.connectionType === "TWOWAY") {
+            console.log("New two way connection with id: " + data.id);
+            io.sockets.in(BLOBROOM).emit("addSource", data);
+            WEBSOCKET.join(BLOBROOM);
+        }
+        else {
+            console.log("Invalid connection type: " + JSON.stringify(data))
+        }
     }
-    else if(data.connectionType === "LISTENER") {
-        console.log("New listener with id: " + data.id);
-        WEBSOCKET.join(BLOBROOM);
-    }
-    else if(data.connectionType === "TWOWAY") {
-        console.log("New two way connection with id: " + data.id);
-        io.sockets.in(BLOBROOM).emit("addSource", data);
-        WEBSOCKET.join(BLOBROOM);
-    }
-    else {
-        console.log("Invalid connection type: " + JSON.stringify(data))
+    else
+    {
+        console.log("JSON ERROR: " + JSON.stringify(data));
     }
 };
 
