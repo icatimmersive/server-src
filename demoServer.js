@@ -5,8 +5,9 @@ var io     = require('socket.io').listen(8888);
 
 function checkTCPJSON(data) {
 	if(data.NEWDATA === null) {return false;}
-    if(data.OLDDATA === null) {return false;}
-	return true
+    	if(data.OLDDATA === null) {return false;}
+
+	return true;
 }
 
 function checkBlobJSON(data) {
@@ -34,6 +35,8 @@ function checkBlobJSON(data) {
     if (data.boundingBox.y === null) {return false;}
     if (data.boundingBox.width === null) {return false;}
     if (data.boundingBox.height === null) {return false;}
+
+    return true;
 }
 
 // TCP socket definitions
@@ -51,15 +54,17 @@ net.createServer(function (tcpSocket) {
         for (var s in dataSplit) {
             var parsedData = JSON.parse(s);
 
-            console.log(data.toString() + "\n");
+            console.log(parsedData.toString() + "\n");
             if(checkTCPJSON(parsedData))
             {
-                for (var nd in parsedData.NEWDATA) {
-                    newCallback(nd);
+		console.log(parsedData);
+                for (var i = 0; i < parsedData.NEWDATA.length(); i++) {
+                    newCallback(parsedData.NEWDATA[i]);
                 }
 
-                for (var od in parsedData.OLDDATA) {
-                    updateCallback(od);
+                for (var i = 0; i < parsedData.OLDDATA.length(); i++) {
+			console.log("OLD DATA");
+                    updateCallback(parsedData.OLDDATA[i]);
                 }
             }
             else
