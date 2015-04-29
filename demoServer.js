@@ -4,36 +4,36 @@ var net    = require('net');
 var io     = require('socket.io').listen(8888);
 
 function checkTCPJSON(data) {
-	if(data.NEWDATA == null) {return false;}
-    if(data.OLDDATA == null) {return false;}
+	if(data.NEWDATA === null) {return false;}
+    if(data.OLDDATA === null) {return false;}
 	return true
 }
 
 function checkBlobJSON(data) {
-    if (data.age == null) {return false;}
-    if (data.connectionType == null) {return false;}
-    if (data.id == null) {return false;}
+    if (data.age === null) {return false;}
+    if (data.connectionType === null) {return false;}
+    if (data.id === null) {return false;}
 
-    if (data.origin == null) {return false;}
-    if (data.origin.x == null) {return false;}
-    if (data.origin.y == null) {return false;}
-    if (data.origin.z == null) {return false;}
+    if (data.origin === null) {return false;}
+    if (data.origin.x === null) {return false;}
+    if (data.origin.y === null) {return false;}
+    if (data.origin.z === null) {return false;}
 
-    if (data.orientation == null) {return false;}
-    if (data.orientation.x == null) {return false;}
-    if (data.orientation.y == null) {return false;}
-    if (data.orientation.z == null) {return false;}
-    if (data.orientation.theta == null) {return false;}
+    if (data.orientation === null) {return false;}
+    if (data.orientation.x === null) {return false;}
+    if (data.orientation.y === null) {return false;}
+    if (data.orientation.z === null) {return false;}
+    if (data.orientation.theta === null) {return false;}
 
-    if (data.source == null) {return false;}
-    if (data.updateTime == null) {return false;}
-    if (data.creationTime == null) {return false;}
+    if (data.source === null) {return false;}
+    if (data.updateTime === null) {return false;}
+    if (data.creationTime === null) {return false;}
 
-    if (data.boundingBox == null) {return false;}
-    if (data.boundingBox.x == null) {return false;}
-    if (data.boundingBox.y == null) {return false;}
-    if (data.boundingBox.width == null) {return false;}
-    if (data.boundingBox.height == null) {return false;}
+    if (data.boundingBox === null) {return false;}
+    if (data.boundingBox.x === null) {return false;}
+    if (data.boundingBox.y === null) {return false;}
+    if (data.boundingBox.width === null) {return false;}
+    if (data.boundingBox.height === null) {return false;}
 }
 
 // TCP socket definitions
@@ -52,7 +52,6 @@ net.createServer(function (tcpSocket) {
             var parsedData = JSON.parse(s);
 
             console.log(data.toString() + "\n");
-            
             if(checkTCPJSON(parsedData))
             {
                 for (var nd in parsedData.NEWDATA) {
@@ -62,6 +61,10 @@ net.createServer(function (tcpSocket) {
                 for (var od in parsedData.OLDDATA) {
                     updateCallback(od);
                 }
+            }
+            else
+            {
+                console.log("Invalid TCP data: " + parsedData);
             }
         }
     });
@@ -93,9 +96,14 @@ var WEBSOCKET;
 
 // Socket.io callback functions
 var startCallback = function(data) {
-    if (checkBlobJSON(data) == true)
+    //console.log(inData);
+    //var data = JSON.parse(inData);
+    //console.log(data);
+    console.log(data.connectionType);
+    console.log(data.id);
+    if (data.conenctionType !== null && data.id !== null)
     {
-        console.log("Starting new connection: " + data);
+        console.log("Starting new connection: " + JSON.stringify(data));
 
         if(data.connectionType === "DATASOURCE") {
             console.log("New blob with id: " + data.id);
@@ -116,12 +124,12 @@ var startCallback = function(data) {
     }
     else
     {
-        console.log("JSON ERROR: " + JSON.stringify(data));
+        console.log("startCallback JSON ERROR: " + JSON.stringify(data));
     }
 };
 
 var newCallback = function(data) {
-    if (checkBlobJSON(data) == true) {
+    if (checkBlobJSON(data) === true) {
         if (data.connectionType === "LISTENER") {
             console.log("Listener sent a 'new' update: " + JSON.stringify(data));
         }
@@ -134,12 +142,12 @@ var newCallback = function(data) {
     }
     else
     {
-        console.log("JSON ERROR: " + JSON.stringify(data));
+        console.log("newCallback JSON ERROR: " + JSON.stringify(data));
     }
 };
 
 var updateCallback = function(data) {
-    if (checkBlobJSON(data) == true) {
+    if (checkBlobJSON(data) === true) {
         if (data.connectionType === "LISTENER") {
             console.log("Listener sent an update: " + JSON.stringify(data));
         }
@@ -151,12 +159,12 @@ var updateCallback = function(data) {
         }
     }
     else {
-        console.log("JSON ERROR: " + JSON.stringify(data));
+        console.log("updateCallback JSON ERROR: " + JSON.stringify(data));
     }
 };
 
 var removeCallback = function(data) {
-    if (checkBlobJSON(data) == true) {
+    if (checkBlobJSON(data) === true) {
         if (data.connectionType === "LISTENER") {
             console.log("Listener sent a 'remove' update: " + JSON.stringify(data));
         }
@@ -168,7 +176,7 @@ var removeCallback = function(data) {
         }
     }
     else {
-        console.log("JSON ERROR: " + JSON.stringify(data));
+        console.log("removeCallback JSON ERROR: " + JSON.stringify(data));
     }
 };
 
