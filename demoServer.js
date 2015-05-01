@@ -16,25 +16,25 @@ function checkBlobJSON(data) {
     if (data.id === null) {return false;}
 
     if (data.origin === null) {return false;}
-    if (data.origin.x === null) {return false;}
-    if (data.origin.y === null) {return false;}
-    if (data.origin.z === null) {return false;}
+    //if (data.origin.x === null) {return false;}
+    //if (data.origin.y === null) {return false;}
+    //if (data.origin.z === null) {return false;}
 
     if (data.orientation === null) {return false;}
-    if (data.orientation.x === null) {return false;}
-    if (data.orientation.y === null) {return false;}
-    if (data.orientation.z === null) {return false;}
-    if (data.orientation.theta === null) {return false;}
+    //if (data.orientation.x === null) {return false;}
+    //if (data.orientation.y === null) {return false;}
+    //if (data.orientation.z === null) {return false;}
+    //if (data.orientation.theta === null) {return false;}
 
     if (data.source === null) {return false;}
     if (data.updateTime === null) {return false;}
     if (data.creationTime === null) {return false;}
 
     if (data.boundingBox === null) {return false;}
-    if (data.boundingBox.x === null) {return false;}
-    if (data.boundingBox.y === null) {return false;}
-    if (data.boundingBox.width === null) {return false;}
-    if (data.boundingBox.height === null) {return false;}
+    //if (data.boundingBox.x === null) {return false;}
+    //if (data.boundingBox.y === null) {return false;}
+    //if (data.boundingBox.width === null) {return false;}
+    //if (data.boundingBox.height === null) {return false;}
 
     return true;
 }
@@ -49,29 +49,52 @@ net.createServer(function (tcpSocket) {
 
     // Handle incoming messages from clients.
     tcpSocket.on('data', function (data) {
-        var dataSplit = data.toString().split("&");
+        var dataSplit = data.toString().trim().split("&");
+	//console.log("Initial Data: " + data.toString());
+	//console.log("===");
+	//console.log("dataSplit: " + dataSplit);
+	//console.log("========");
 
-        for (var s in dataSplit) {
-            var parsedData = JSON.parse(s);
+        //for (var s in dataSplit) {
+	dataSplit.forEach(function(element, index, array) {
+	    //console.log("element: " + element);
+	    if(element !== "")
+	    {
+            	var parsedData = JSON.parse(element);
 
-            console.log(parsedData.toString() + "\n");
-            if(checkTCPJSON(parsedData))
-            {
-		console.log(parsedData);
-                for (var i = 0; i < parsedData.NEWDATA.length(); i++) {
-                    newCallback(parsedData.NEWDATA[i]);
-                }
+            	//console.log("_________age: " + parsedData.age);
 
-                for (var i = 0; i < parsedData.OLDDATA.length(); i++) {
-			console.log("OLD DATA");
-                    updateCallback(parsedData.OLDDATA[i]);
-                }
-            }
-            else
-            {
-                console.log("Invalid TCP data: " + parsedData);
-            }
-        }
+		if(parsedData.age === "NEW")
+		{
+			newCallback(element);
+		}
+		else if(parsedData.age === "OLD")
+		{
+			updateCallback(element);
+		}
+		else
+		{
+			console.log("dataSplit.foreach: Invalid age");
+		}
+            	//if(checkTCPJSON(parsedData))
+            	//{
+		//	console.log("NEWDATA: " + parsedData.NEWDATA);
+		//	console.log("===");
+		//	parsedData.NEWDATA.forEach(function(element, index, array) {
+		//		console.log("NEWDATA element: " + element.toString());
+		//		newCallback(element);
+		//	});
+		//	parsedData.OLDDATA.forEach(function(element, index, array) {
+		//		console.log("OLDDATA element: " + element);
+		//		updateCallback(element);
+		//	});
+            	//}
+            	//else
+            	//{
+                //	console.log("Invalid TCP data: " + parsedData);
+            	//}
+	    }
+        });
     });
      
     // Remove the client from the list when it leaves
@@ -101,11 +124,7 @@ var WEBSOCKET;
 
 // Socket.io callback functions
 var startCallback = function(data) {
-    //console.log(inData);
     //var data = JSON.parse(inData);
-    //console.log(data);
-    console.log(data.connectionType);
-    console.log(data.id);
     if (data.conenctionType !== null && data.id !== null)
     {
         console.log("Starting new connection: " + JSON.stringify(data));
@@ -116,6 +135,7 @@ var startCallback = function(data) {
         }
         else if(data.connectionType === "LISTENER") {
             console.log("New listener with id: " + data.id);
+		console.log(WEBSOCKET);
             WEBSOCKET.join(BLOBROOM);
         }
         else if(data.connectionType === "TWOWAY") {
@@ -133,7 +153,9 @@ var startCallback = function(data) {
     }
 };
 
-var newCallback = function(data) {
+var newCallback = function(inData) {
+	var data = JSON.parse(inData);
+	console.log("==========================" + data);
     if (checkBlobJSON(data) === true) {
         if (data.connectionType === "LISTENER") {
             console.log("Listener sent a 'new' update: " + JSON.stringify(data));
@@ -142,7 +164,7 @@ var newCallback = function(data) {
             io.sockets.in(BLOBROOM).emit("newBlob", data);
         }
         else {
-            console.log("Invalid connection type: " + JSON.stringify(data));
+            console.log("newCallback Invalid connection type: " + JSON.stringify(data));
         }
     }
     else
@@ -151,7 +173,9 @@ var newCallback = function(data) {
     }
 };
 
-var updateCallback = function(data) {
+var updateCallback = function(inData) {
+	var data = JSON.parse(inData);
+	//console.log("________________________" + data);
     if (checkBlobJSON(data) === true) {
         if (data.connectionType === "LISTENER") {
             console.log("Listener sent an update: " + JSON.stringify(data));
@@ -160,7 +184,7 @@ var updateCallback = function(data) {
             io.sockets.in(BLOBROOM).emit("updateBlob", data);
         }
         else {
-            console.log("Invalid connection type: " + JSON.stringify(data));
+            console.log("updateCallback Invalid connection type: " + JSON.stringify(data));
         }
     }
     else {
