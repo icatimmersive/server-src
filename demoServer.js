@@ -60,39 +60,34 @@ net.createServer(function (tcpSocket) {
 	    //console.log("element: " + element);
 	    if(element !== "")
 	    {
-            	var parsedData = JSON.parse(element);
+		var err = false;
 
-            	//console.log("_________age: " + parsedData.age);
-
-		if(parsedData.age === "NEW")
-		{
-			newCallback(element);
+		try {
+			var parsedData = JSON.parse(element)
+		} catch(e) {
+			err = true;
+			console.log("JSON error");
 		}
-		else if(parsedData.age === "OLD")
-		{
-			updateCallback(element);
+		if(err === false) {
+            		//console.log("_________age: " + parsedData.age);
+			if(parsedData.age === "NEW")
+			{
+				newCallback(element);
+			}
+			else if(parsedData.age === "OLD")
+			{
+				updateCallback(element);
+			}
+			else if(parsedData.age === "LOST")
+			{
+				removeCallback(element);
+			}
+			else
+			{
+				console.log("dataSplit.foreach: Invalid age");
+			}
 		}
-		else
-		{
-			console.log("dataSplit.foreach: Invalid age");
-		}
-            	//if(checkTCPJSON(parsedData))
-            	//{
-		//	console.log("NEWDATA: " + parsedData.NEWDATA);
-		//	console.log("===");
-		//	parsedData.NEWDATA.forEach(function(element, index, array) {
-		//		console.log("NEWDATA element: " + element.toString());
-		//		newCallback(element);
-		//	});
-		//	parsedData.OLDDATA.forEach(function(element, index, array) {
-		//		console.log("OLDDATA element: " + element);
-		//		updateCallback(element);
-		//	});
-            	//}
-            	//else
-            	//{
-                //	console.log("Invalid TCP data: " + parsedData);
-            	//}
+		err = false;
 	    }
         });
     });
@@ -124,7 +119,6 @@ var WEBSOCKET;
 
 // Socket.io callback functions
 var startCallback = function(data) {
-    //var data = JSON.parse(inData);
     if (data.conenctionType !== null && data.id !== null)
     {
         console.log("Starting new connection: " + JSON.stringify(data));
@@ -135,7 +129,6 @@ var startCallback = function(data) {
         }
         else if(data.connectionType === "LISTENER") {
             console.log("New listener with id: " + data.id);
-		console.log(WEBSOCKET);
             WEBSOCKET.join(BLOBROOM);
         }
         else if(data.connectionType === "TWOWAY") {
@@ -154,8 +147,15 @@ var startCallback = function(data) {
 };
 
 var newCallback = function(inData) {
-	var data = JSON.parse(inData);
-	console.log("==========================" + data);
+	var data;
+
+	if(typeof inData === 'object') {
+		data = inData
+	}
+	else {
+		data = JSON.parse(inData);
+	}
+	//console.log("==========================" + data);
     if (checkBlobJSON(data) === true) {
         if (data.connectionType === "LISTENER") {
             console.log("Listener sent a 'new' update: " + JSON.stringify(data));
@@ -174,7 +174,15 @@ var newCallback = function(inData) {
 };
 
 var updateCallback = function(inData) {
-	var data = JSON.parse(inData);
+	var data;
+
+	if(typeof inData === 'object') {
+		data = inData
+	}
+	else {
+		data = JSON.parse(inData);
+	}
+	
 	//console.log("________________________" + data);
     if (checkBlobJSON(data) === true) {
         if (data.connectionType === "LISTENER") {
@@ -192,7 +200,15 @@ var updateCallback = function(inData) {
     }
 };
 
-var removeCallback = function(data) {
+var removeCallback = function(inData) {
+	var data;
+
+	if(typeof inData === 'object') {
+		data = inData
+	}
+	else {
+		data = JSON.parse(inData);
+	}
     if (checkBlobJSON(data) === true) {
         if (data.connectionType === "LISTENER") {
             console.log("Listener sent a 'remove' update: " + JSON.stringify(data));
