@@ -70,21 +70,23 @@ net.createServer(function (tcpSocket) {
 		}
 		if(err === false) {
             		//console.log("_________age: " + parsedData.age);
-			if(parsedData.age === "NEW")
+			if(parsedData.age == "NEW")
 			{
 				newCallback(element);
 			}
-			else if(parsedData.age === "OLD")
+			else if(parsedData.age == "OLD")
 			{
 				updateCallback(element);
 			}
-			else if(parsedData.age === "LOST")
+			else if(parsedData.age == "LOST")
 			{
 				removeCallback(element);
 			}
 			else
 			{
 				console.log("dataSplit.foreach: Invalid age");
+				console.log(parsedData);
+				console.log(parsedData.age);
 			}
 		}
 		err = false;
@@ -155,7 +157,7 @@ var newCallback = function(inData) {
 	else {
 		data = JSON.parse(inData);
 	}
-	//console.log("==========================" + data);
+	//console.log("==========================" + data.connectionType);
     if (checkBlobJSON(data) === true) {
         if (data.connectionType === "LISTENER") {
             console.log("Listener sent a 'new' update: " + JSON.stringify(data));
