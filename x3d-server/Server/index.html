@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE-edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<title>Mirror Worlds</title>
+
+		<link rel="stylesheet" type="text/css" href="css/main.css">
+
+		<script type="text/javascript">
+		function httpGet(theUrl)
+		{
+		    var xmlHttp = null;
+
+		    xmlHttp = new XMLHttpRequest();
+		    xmlHttp.open("GET", theUrl, false);
+		    xmlHttp.send();
+		    return xmlHttp.responseText;
+		}
+		function test()
+		{
+			var target = document.getElementById("listContainer");
+			var str = "";
+			var wl = JSON.parse(httpGet("/worldList"));
+
+			for (var name in wl) {
+				str += name + ": ";
+				str += "<a href='/worlds/" + name + "/assets/index.html'> Visit </a>|";
+				str += "<a href='/worlds/" + name + "_management.html'> Manage </a>";
+				str += "<br><br>";
+			};
+
+			target.innerHTML = str;
+		}
+		</script>
+
+	</head>
+	<body onload="test()">
+		<div class="mainContainer">
+
+			<h1>MIRROR WORLDS</h1>
+			
+			<div class="welcome">
+				<p>
+					<b style="font-size:25px;">WHAT THIS IS...</b>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod justo vitae magna sodales, id laoreet lectus venenatis. Aliquam molestie pharetra lectus, ut placerat lacus scelerisque sed. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Quisque sit amet nibh vel urna aliquam placerat nec vitae tellus. Maecenas cursus magna augue, eget cursus quam dapibus vitae. Duis dignissim sapien vel velit sollicitudin, nec vestibulum neque luctus. Vestibulum quis viverra magna, id tristique nibh. Donec diam diam, egestas eget consectetur id, mollis placerat dolor.
+				</p>
+			</div> 
+			<div class="buttons">
+				<!-- LEFT DIV for MAKE NEW WORLD -->
+				<div>
+					<h2>MAKE NEW WORLD</h2>
+					
+							<form action="uploadWorld" method="post" enctype="multipart/form-data">
+								<input type="file" name="worldFiles" />
+								<input type="text" name="worldName" />
+								<input type="submit">
+							</form>
+					
+					
+				</div>
+				
+				<div> <!-- RIGHT DIV for LIST OF WORLDS -->
+					<h2>LIST OF WORLDS</h2>
+					<div id="listContainer">
+						
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+
+	</body>
+</html>
