@@ -41,7 +41,7 @@ function websocketClient(userlist, addUser, delUser, update)
 			// Gets the client up to speed with all of the current data.
 			// Not currently supported by the server end
 
-			// Send the data to the callback
+			// Send the data to the callback, may need to reorganize data in a way that the x3d script will understand
 			if(userlist != null)
 			{
 				userlist(data);
@@ -50,7 +50,7 @@ function websocketClient(userlist, addUser, delUser, update)
 			socket.emit('login', name, currPosition, currOrientation, payload);
 		});
 
-	socket.on('update', function(data)
+	socket.on('updateBlob', function(data)
 		{
 			// Fire the update callback
 			if (update != null)
@@ -59,7 +59,7 @@ function websocketClient(userlist, addUser, delUser, update)
 			};
 		});
 
-	socket.on('adduser', function(data)
+	socket.on('newBlob', function(data)
 		{
 			if(data[0] != name)
 			{
@@ -73,7 +73,7 @@ function websocketClient(userlist, addUser, delUser, update)
 
 		});
 
-	socket.on('deluser', function(data)
+	socket.on('removeBlob', function(data)
 		{
 			// Remove the avatar from the scene.
 			var avatars = document.getElementById("avatarGroup");
