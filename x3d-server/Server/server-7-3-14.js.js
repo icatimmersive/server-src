@@ -1,13 +1,13 @@
-var expr   = require('express')
-var url    = require('url')
-var http   = require('http') 
-var fs     = require('fs')
-var multer = require('multer')
-var unzip  = require('unzip')
+var expr   = require('express');
+var url    = require('url');
+var http   = require('http');
+var fs     = require('fs');
+var multer = require('multer');
+var unzip  = require('unzip');
 
-var app    = expr()
-var server = app.listen(8888)
-var io     = require('socket.io').listen(server)
+var app    = expr();
+var server = app.listen(8888);
+var io     = require('socket.io').listen(server);
 
 // The world list holds world objects.
 // World objects contains a name and a user-list

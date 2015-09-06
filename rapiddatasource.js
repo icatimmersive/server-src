@@ -22,7 +22,7 @@ var newData = {
 	updatedTime: updatedTime,
 	creationTime: creationTime,
 	boundingBox: boundingBox
-}
+};
 
 var updateData = {
 	connectionType: connectionType,
@@ -34,7 +34,7 @@ var updateData = {
 	updatedTime: updatedTime,
 	creationTime: creationTime,
 	boundingBox: boundingBox
-}
+};
 
 var removeData = {
 	connectionType: connectionType,
@@ -46,7 +46,7 @@ var removeData = {
 	updatedTime: updatedTime,
 	creationTime: creationTime,
 	boundingBox: boundingBox
-}
+};
 
 socket.on('connect', function()
 {

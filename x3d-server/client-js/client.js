@@ -58,7 +58,7 @@ var buildList = function(data)
 		t.appendChild(i);
 		hook.appendChild(t);
 	}
-}
+};
 
 // Adds a new user to the x3d scene
 var addUser = function(data)
@@ -87,7 +87,7 @@ var addUser = function(data)
 
 	t.appendChild(i);
 	hook.appendChild(t);
-}
+};
 
 // removes a user from the x3d scene
 var remUser = function(data)
@@ -95,7 +95,7 @@ var remUser = function(data)
 	var users = document.getElementById("users");
 	var remove2 = document.getElementById(data[0]);
 	users.removeChild(remove2);
-}
+};
 
 // Updates a user based on server data
 var updateList = function(data)
@@ -117,15 +117,14 @@ var updateList = function(data)
 		t.innerHTML = "";
 		var newAvatar = document.getElementById(data[3][0][1]).cloneNode(true);
 		t.appendChild(newAvatar);
-	};
-	
+	}
 	// Update the avatar's position and orientation
 	if(t != null)
 	{
 		t.setAttribute("translation", data[1].x + " " + data[1].y + " " + data[1].z);
 		t.setAttribute("rotation", data[2][0].x + " " + data[2][0].y + " " + data[2][0].z + " " + data[2][1]);
-	};
-}
+	}
+};
 
 function configureScene()
 {
@@ -147,7 +146,7 @@ function configureScene()
 	for (var i = 0; i < cams.length; i++)
 	{
 		cams[i].addEventListener('viewpointChanged', positionUpdated, false);
-	};
+	}
 }
 
 function updateAvatar(newAvatar)

@@ -6,7 +6,7 @@ socket.on('connect', function()
 	console.log("connected to server");
 	
 	// Establish your connection with the server
-	socket.emit("start", {"connectionType": "LISTENER", "id": "listenerTest"})
+	socket.emit("start", {"connectionType": "LISTENER", "id": "listenerTest"});
 
 	// Listens for new data sources
 	socket.on('addSource', function(data)
