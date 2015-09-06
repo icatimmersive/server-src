@@ -45,8 +45,7 @@ function websocketClient(userlist, addUser, delUser, update)
 			if(userlist != null)
 			{
 				userlist(data);
-			};
-
+			}
 			socket.emit('login', name, currPosition, currOrientation, payload);
 		});
 
@@ -56,7 +55,7 @@ function websocketClient(userlist, addUser, delUser, update)
 			if (update != null)
 			{
 				update(data);
-			};
+			}
 		});
 
 	socket.on('newBlob', function(data)
@@ -68,7 +67,7 @@ function websocketClient(userlist, addUser, delUser, update)
 				if (addUser != null)
 				{
 					addUser(data);
-				};
+				}
 			}
 
 		});
@@ -84,7 +83,7 @@ function websocketClient(userlist, addUser, delUser, update)
 			if (delUser != null)
 			{
 				delUser(data);
-			};
+			}
 		});
 }
 
@@ -98,7 +97,7 @@ var positionUpdated = function(e)
     //Tell the server that this client has moved and send its new location data
 	socket.emit('update', {'user': user});
 
-}
+};
 
 function addToPayload(data)
 {
@@ -116,11 +115,11 @@ function updatePayloadValue(data, forceUpdate)
 			payload[i] = data;
 			if (forceUpdate)
 			{
-				socket.emit('update', {'user': user});				
-			};
+				socket.emit('update', {'user': user});
+
+			}
 			return true;
 		}
-	};
-
+	}
 	return false;
 }
