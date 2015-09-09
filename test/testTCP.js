@@ -53,25 +53,49 @@ describe('TCPServer', function () {
         })
     });
 
-    describe('serverConnect', function () {
-        it('should have connected and can now try to send a valid connection by sending a connect phrase', function (done) {
+    describe('sendingNewBlobs', function () {
+        beforeEach(function () {
             matlabSender.on('data', function () {
                     assert.ok(false, 'We should not have received a response back to MATLAB');
                 }
             );
+        });
+        afterEach(function (done) {
+            matlabSender.end(function () {
+                done()
+            });
+        });
+        it('should have connected and can now try to send a valid connection by sending a connect phrase', function (done) {
+            var timeout = setTimeout(function () {
+                assert.ok(false, 'we have not received in the client, even though a new blob was sent');
+                done()
+            }, 400);
             client.on('newBlob', function (blob) {
                 assert.ok(true, 'we should receive a response back to our client');
                 assert.equal(JSON.stringify(blob), JSON.stringify(sampleNewData), 'We should receive the same blob we sent');
-                done()
+                clearTimeout(timeout);
+                done();
             });
             matlabSender.write(JSON.stringify(sampleNewData));
-            setTimeout(function () {
-                assert.ok(false, 'we have not received in the client, even though a new blob was sent');
+
+        });
+
+        it('should not get any response when we send an invalid blob', function (done) {
+            var invalidBlob = {invalid: "true"};
+            var timeout = setTimeout(function () {
+                assert.ok(true, 'we have not received in the client because an invalid blob was sent');
                 done()
-            }, 1500)
+            }, 300);
+            client.on('newBlob', function (blob) {
+                assert.ok(false, 'we should not receive a response as the blob was invalid. We received:   ' + blob);
+                clearTimeout(timeout);
+                done()
+            });
+            matlabSender.write(JSON.stringify(invalidBlob));
 
         });
     });
+
     it('should call the connection again', function (done) {
         assert.isOk(true, 'should never fail');
         done()
