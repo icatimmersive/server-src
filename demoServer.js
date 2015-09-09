@@ -5,7 +5,7 @@ var io     = require('socket.io').listen(8888);
 
 function checkTCPJSON(data) {
 	if(data.NEWDATA === null) {return false;}
-    	if(data.OLDDATA === null) {return false;}
+    if(data.OLDDATA === null) {return false;}
 
 	return true;
 }
@@ -42,10 +42,12 @@ function checkBlobJSON(data) {
 // TCP socket definitions
 net.createServer(function (tcpSocket) { 
     // Hook this data source into the system
-    tcpSocket.on('connect', function() {
+    /**
+     * The connection event is implicitly called by this event
+     * having a listener for this does nothing at all
+     */
         console.log("TCP client connected");
         startCallback({"connectionType": "DATASOURCE", "id": "TCP"});
-    });
 
     var firstPartString = null;
     // Handle incoming messages from clients.
@@ -55,14 +57,12 @@ net.createServer(function (tcpSocket) {
 	//console.log("===");
 	//console.log("dataSplit: " + dataSplit);
 	//console.log("========");
-
         //for (var s in dataSplit) {
 	dataSplit.forEach(function(element, index, array) {
 	    //console.log("element: " + element);
 	    if(element !== "")
 	    {
 		var err = false;
-
 		try {
 			var parsedData = JSON.parse(element)
 		} catch(e) {
@@ -139,7 +139,7 @@ var WEBSOCKET;
 
 // Socket.io callback functions
 var startCallback = function(data) {
-    if (data.conenctionType !== null && data.id !== null)
+    if (data.connectionType !== null && data.id !== null)
     {
         console.log("Starting new connection: " + JSON.stringify(data));
 
@@ -168,19 +168,20 @@ var startCallback = function(data) {
 
 var newCallback = function(inData) {
 	var data;
-
 	if(typeof inData === 'object') {
 		data = inData
 	}
 	else {
 		data = JSON.parse(inData);
 	}
+
 	//console.log("==========================" + data.connectionType);
     if (checkBlobJSON(data) === true) {
         if (data.connectionType === "LISTENER") {
             console.log("Listener sent a 'new' update: " + JSON.stringify(data));
         }
         else if (data.connectionType === "DATASOURCE" || data.connectionType === "TWOWAY") {
+            //console.log('we are a data source');
             io.sockets.in(BLOBROOM).emit("newBlob", data);
         }
         else {
