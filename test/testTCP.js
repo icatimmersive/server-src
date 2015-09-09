@@ -42,8 +42,8 @@ client.on('connect', function () {
 
 
 //turn off the server from talking and spamming the test console
-console.log = function () {
-};
+//console.log = function () {
+//};
 
 describe('TCPServer', function () {
     beforeEach(function (done) {
@@ -95,8 +95,70 @@ describe('TCPServer', function () {
 
         });
     });
+    describe("Sending UpdateBlobs", function () {
+        var connectionType = "DATASOURCE";
+        var id = "0";
+        var origin = {x: 1.0, y: 2.0, z: 3.0};
+        var orientation = {x: 0.0, y: 0.0, z: 0.0, theta: 0.0};
+        var source = "matLabClientTestSuite";
+        var updatedTime = "now";
+        var creationTime = "recently";
+        var boundingBox = {x: 0.0, y: 0.0, width: 10.0, height: 10.0};
+        var updateData = {
+            connectionType: connectionType,
+            updateType: "update",
+            id: id,
+            origin: origin,
+            orientation: orientation,
+            source: source,
+            updatedTime: updatedTime,
+            creationTime: creationTime,
+            boundingBox: boundingBox,
+            age: "OLD"
+        };
 
-    it('should call the connection again', function (done) {
+        beforeEach(function () {
+            //matlabSender = net.connect({port: 9999}, function () {
+            //  assert.isTrue(true, "We have successfully connected to the Server");
+            //matlabSender.on('data', function () {
+            //      assert.ok(false, 'We should not have received a response back to MATLAB');
+            //    done();
+            //}
+            //);
+            //})
+        });
+        describe("Valid UpdateBlob", function () {
+            it("should return an updated blob to the receiver", function (done) {
+                var timeout = setTimeout(function () {
+                    assert.ok(false, 'we have not received in the client, even though an updated blob was sent');
+                    done()
+                }, 800);
+                client.on('updateBlob', function (blob) {
+                    assert.isOk(true, 'we have received an updated blob as we expected');
+                    assert.equal(JSON.stringify(updateData), JSON.stringify(blob), 'WE should receive he same blob that we sent out');
+                    clearTimeout(timeout);
+                    done();
+                });
+                matlabSender.write(JSON.stringify(updateData))
+            });
+            it("should not send anything back along to the matlab instance", function () {
+                var timeout = setTimeout(function () {
+                    assert.ok(true, 'we have not received an updated blob to the matlab instance');
+                    done()
+                }, 300);
+                matlabSender.on('updateBlob', function (blob) {
+                    assert.isOk(false, 'we have received an updated blob but we did not want to receive any data');
+                    clearTimeout(timeout);
+                    done();
+                });
+                matlabSender.write(JSON.stringify(updateData))
+            })
+        });
+        describe("Invalid UpdateBlob", function () {
+
+        });
+    });
+    it('should connect to the server for each method', function (done) {
         assert.isOk(true, 'should never fail');
         done()
     })
