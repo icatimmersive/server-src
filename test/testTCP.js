@@ -85,7 +85,7 @@ assertNoReceive = function (client, blobData, done) {
     });
     matlabSender.write(JSON.stringify(blobData));
 };
-assertDidReceive = function (client, blobData, done) {
+assertReceive = function (client, blobData, done) {
     var timeout = setTimeout(function () {
         assert.ok(false, 'we have not received in the client, even though we sent valid data');
         done()
@@ -131,7 +131,7 @@ describe('TCPServer', function () {
             });
         });
         it('should have connected and can now try to send a valid connection by sending a connect phrase', function (done) {
-            assertDidReceive(client, sampleNewData, done);
+            assertReceive(client, sampleNewData, done);
         });
 
         it('should not get any response when we send an invalid blob', function (done) {
@@ -165,7 +165,7 @@ describe('TCPServer', function () {
 
         describe("Valid UpdateBlob", function () {
             it("should return an updated blob to the receiver", function (done) {
-                assertDidReceive(client, updateData, done);
+                assertReceive(client, updateData, done);
             });
 
             it("should not send anything back along to the matlab instance", function (done) {
@@ -173,8 +173,18 @@ describe('TCPServer', function () {
             });
         });
         describe("Invalid UpdateBlob", function () {
+            var invalidUpdate = {age: 'OLD'};
+            it(' should not return anything when we send an invalid blob', function (done) {
+                assertNoReceive(client, invalidUpdate, done);
+            });
 
+            it(' should also return nothing to matlab when it sends invalid data', function (done) {
+                assertNoReceive(matlabSender, invalidUpdate, done);
+            })
         });
+    });
+    describe("Sending Remove Blob", function () {
+
     });
     it('should connect to the server for each method', function (done) {
         assert.isOk(true, 'should never fail');
