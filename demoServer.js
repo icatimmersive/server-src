@@ -3,6 +3,20 @@ var http   = require('http');
 var net    = require('net');
 var io     = require('socket.io').listen(8888);
 
+/**
+ * allows us to remove a specific element of the array
+ */
+Array.prototype.remove = function () {
+    var what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L];
+        while ((ax = this.indexOf(what)) !== -1) {
+            this.splice(ax, 1);
+        }
+    }
+    return this;
+};
+
 function checkTCPJSON(data) {
 	if(data.NEWDATA === null) {return false;}
     if(data.OLDDATA === null) {return false;}
@@ -38,7 +52,16 @@ function checkBlobJSON(data) {
 
     return true;
 }
-
+/**
+ * Add an & to the end so matlab can parse multiple coming in
+ * @param blobToSend the blob to be broadcast
+ */
+var broadcastToMatlab = function (blobToSend) {
+    matlabClientList.forEach(function (socket) {
+        socket.write(blobToSend + "&");
+    })
+};
+var matlabClientList = [];
 // TCP socket definitions
 net.createServer(function (tcpSocket) { 
     // Hook this data source into the system
@@ -48,6 +71,7 @@ net.createServer(function (tcpSocket) {
      */
         console.log("TCP client connected");
         startCallback({"connectionType": "DATASOURCE", "id": "TCP"});
+    matlabClientList.push(tcpSocket);
 
     var firstPartString = null;
     // Handle incoming messages from clients.
@@ -90,14 +114,17 @@ net.createServer(function (tcpSocket) {
             		//console.log("_________age: " + parsedData.age);
 			if(parsedData.age == "NEW")
 			{
+                broadcastToMatlab(element);
 				newCallback(element);
 			}
 			else if(parsedData.age == "OLD")
 			{
+                broadcastToMatlab(element);
 				updateCallback(element);
 			}
 			else if(parsedData.age == "LOST")
 			{
+                broadcastToMatlab(element);
 				removeCallback(element);
 			}
 			else
@@ -115,6 +142,7 @@ net.createServer(function (tcpSocket) {
     // Remove the client from the list when it leaves
     tcpSocket.on('end', function () {
         console.log("TCP client disconnected");
+        matlabClientList.remove(tcpSocket);
     });
 }).listen(9999);
 
