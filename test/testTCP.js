@@ -28,7 +28,8 @@ var sampleNewData = {
         "y": 2.0,
         "width": 5,
         "height": 5
-    }
+    },
+    cameraID: 1
 };
 
 var assert = require('chai').assert; //using the chai libraries for all of the assert/expect/should
@@ -83,6 +84,11 @@ assertNoReceive = function (client, blobData, done) {
         clearTimeout(timeout);
         done()
     });
+    client.on('removeBlob', function (blob) {
+        assert.ok(false, 'we should not receive a response to the client ' + clientString + '. We received:   ' + JSON.stringify(blob));
+        clearTimeout(timeout);
+        done()
+    });
     matlabSender.write(JSON.stringify(blobData));
 };
 assertReceive = function (client, blobData, done) {
@@ -102,12 +108,29 @@ assertReceive = function (client, blobData, done) {
         clearTimeout(timeout);
         done();
     });
+    client.on('removeBlob', function (blob) {
+        assert.ok(true, 'we should receive a response back to our client');
+        assert.equal(JSON.stringify(blob), JSON.stringify(blobData), 'We should receive the same blob we sent');
+        clearTimeout(timeout);
+        done();
+    });
     matlabSender.write(JSON.stringify(blobData));
 };
 
 
 describe('TCPServer', function () {
+    var connectionType = "DATASOURCE";
+    var id = "0";
+    var origin = {x: 1.0, y: 2.0, z: 3.0};
+    var orientation = {x: 0.0, y: 0.0, z: 0.0, theta: 0.0};
+    var source = "matLabClientTestSuite";
+    var updatedTime = "now";
+    var creationTime = "recently";
+    var boundingBox = {x: 0.0, y: 0.0, width: 10.0, height: 10.0};
     beforeEach(function (done) {
+        if (matlabSender != null) {
+            matlabSender.removeAllListeners();
+        }
         matlabSender = net.connect({port: 9999}, function () {
             assert.isTrue(true, "We have successfully connected to the Server");
             done()
@@ -121,7 +144,7 @@ describe('TCPServer', function () {
     describe('sendingNewBlobs', function () {
         beforeEach(function () {
             matlabSender.on('data', function () {
-                    assert.ok(false, 'We should not have received a response back to MATLAB');
+                    assert.ok(true, 'We should have received a response back to matlab in the form of data');
                 }
             );
         });
@@ -141,14 +164,6 @@ describe('TCPServer', function () {
         });
     });
     describe("Sending UpdateBlobs", function () {
-        var connectionType = "DATASOURCE";
-        var id = "0";
-        var origin = {x: 1.0, y: 2.0, z: 3.0};
-        var orientation = {x: 0.0, y: 0.0, z: 0.0, theta: 0.0};
-        var source = "matLabClientTestSuite";
-        var updatedTime = "now";
-        var creationTime = "recently";
-        var boundingBox = {x: 0.0, y: 0.0, width: 10.0, height: 10.0};
         var updateData = {
             connectionType: connectionType,
             updateType: "update",
@@ -184,6 +199,39 @@ describe('TCPServer', function () {
         });
     });
     describe("Sending Remove Blob", function () {
+        describe("Valid Remove Blob", function () {
+            var removeData = {
+                connectionType: connectionType,
+                updateType: "remove",
+                id: id,
+                origin: origin,
+                orientation: orientation,
+                source: source,
+                updatedTime: updatedTime,
+                creationTime: creationTime,
+                boundingBox: boundingBox,
+                age: "LOST"
+            };
+            it("should receive the blob that was removed to the listener", function (done) {
+                assertReceive(client, removeData, done);
+            });
+            it('should not receive anything back to the matlab instance', function (done) {
+                assertNoReceive(matlabSender, removeData, done)
+            })
+        });
+
+        describe("Invalid Remove Blob", function () {
+            var invalidData = {
+                updateType: "remove",
+                age: "LOST"
+            };
+            it("should not receive anything on the listener when this is called", function (done) {
+                assertNoReceive(client, invalidData, done)
+            });
+            it("Should not receive anything in the matlab client like normal", function (done) {
+                assertNoReceive(matlabSender, invalidData, done)
+            })
+        })
 
     });
     it('should connect to the server for each method', function (done) {
