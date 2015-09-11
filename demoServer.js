@@ -47,6 +47,7 @@ net.createServer(function (tcpSocket) {
         startCallback({"connectionType": "DATASOURCE", "id": "TCP"});
     });
 
+    var firstPartString = null;
     // Handle incoming messages from clients.
     tcpSocket.on('data', function (data) {
         var dataSplit = data.toString().trim().split("&");
@@ -66,7 +67,23 @@ net.createServer(function (tcpSocket) {
 			var parsedData = JSON.parse(element)
 		} catch(e) {
 			err = true;
-			console.log("JSON error");
+			console.log("JSON error on element" + element);
+                        console.log(data.toString());
+                        if (firstPartString != null)
+                        {
+                          try{
+                           parsedData = JSON.parse(firstPartString + element);
+                           err = false;
+                          }
+                          catch(e){
+                           err = true;
+                           firstPartString = element;
+                           console.log("we still had an invalid object");
+                          }
+                        }
+                        else{
+                         firstPartString = element;
+                        }
 		}
 		if(err === false) {
             		//console.log("_________age: " + parsedData.age);
