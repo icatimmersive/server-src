@@ -67,12 +67,13 @@ net.createServer(function (tcpSocket) {
 			var parsedData = JSON.parse(element)
 		} catch(e) {
 			err = true;
-			console.log("JSON error on element" + element);
-                        console.log(data.toString());
+            console.log("JSON error on element");
                         if (firstPartString != null)
                         {
                           try{
                            parsedData = JSON.parse(firstPartString + element);
+                              console.log("WE had a valid concatenation");
+                              element = firstPartString + element;
                            err = false;
                           }
                           catch(e){
