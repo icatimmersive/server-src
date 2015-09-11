@@ -17,6 +17,11 @@ Array.prototype.remove = function () {
     return this;
 };
 
+/**
+ * Not currently Used
+ * @param data to be validity checked
+ * @returns {boolean} if the data is valid
+ */
 function checkTCPJSON(data) {
 	if(data.NEWDATA === null) {return false;}
     if(data.OLDDATA === null) {return false;}
@@ -71,7 +76,10 @@ net.createServer(function (tcpSocket) {
      */
         console.log("TCP client connected");
         startCallback({"connectionType": "DATASOURCE", "id": "TCP"});
+    //if (matlabClientList.indexOf(tcpSocket) ==! -1) {
     matlabClientList.push(tcpSocket);
+    //}
+
 
     var firstPartString = null;
     // Handle incoming messages from clients.
