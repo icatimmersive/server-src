@@ -43,8 +43,8 @@ client.on('connect', function () {
 
 
 //turn off the server from talking and spamming the test console
-console.log = function () {
-};
+//console.log = function () {
+//};
 
 /**
  * This is to be used when JSON.stringify reports circular references
@@ -97,27 +97,31 @@ assertReceive = function (client, blobData, done) {
         done()
     }, 800);
     client.on('newBlob', function (blob) {
+        console.log(blob);
         assert.ok(true, 'we should receive a response back to our client');
         assert.equal(JSON.stringify(blob), JSON.stringify(blobData), 'We should receive the same blob we sent');
         clearTimeout(timeout);
         done();
     });
     client.on('updateBlob', function (blob) {
+        console.log(blob);
         assert.ok(true, 'we should receive a response back to our client');
         assert.equal(JSON.stringify(blob), JSON.stringify(blobData), 'We should receive the same blob we sent');
         clearTimeout(timeout);
         done();
     });
     client.on('removeBlob', function (blob) {
+        console.log(blob);
         assert.ok(true, 'we should receive a response back to our client');
         assert.equal(JSON.stringify(blob), JSON.stringify(blobData), 'We should receive the same blob we sent');
         clearTimeout(timeout);
         done();
     });
-    matlabSender.write(JSON.stringify(blobData));
+    matlabSender.write(JSON.stringify(blobData) + '&');
 };
 
 
+//noinspection JSValidateTypes
 describe('TCPServer', function () {
     var connectionType = "DATASOURCE";
     var id = "0";
@@ -135,6 +139,9 @@ describe('TCPServer', function () {
             assert.isTrue(true, "We have successfully connected to the Server");
             done()
         });
+        matlabSender.on('data', function (data) {
+            assert.isTrue(true, "We received data");
+        });
         client.removeAllListeners();
         client.on('connect', function () {
             client.emit('start', {connectionType: "LISTENER", id: "listenerClient"});
@@ -143,7 +150,8 @@ describe('TCPServer', function () {
 
     describe('sendingNewBlobs', function () {
         beforeEach(function () {
-            matlabSender.on('data', function () {
+            matlabSender.on('data', function (blob) {
+                    console.log("We received a blob" + JSON.stringify(blob));
                     assert.ok(true, 'We should have received a response back to matlab in the form of data');
                 }
             );
