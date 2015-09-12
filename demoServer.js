@@ -23,10 +23,12 @@ Array.prototype.remove = function () {
  * @returns {boolean} if the data is valid
  */
 function checkTCPJSON(data) {
-	if(data.NEWDATA === null) {return false;}
+    if (data.NEWDATA === null) {
+        return false;
+    }
     if(data.OLDDATA === null) {return false;}
 
-	return true;
+    return true;
 }
 
 function checkBlobJSON(data) {
@@ -68,14 +70,14 @@ var broadcastToMatlab = function (blobToSend) {
 };
 var matlabClientList = [];
 // TCP socket definitions
-net.createServer(function (tcpSocket) { 
+net.createServer(function (tcpSocket) {
     // Hook this data source into the system
     /**
      * The connection event is implicitly called by this event
      * having a listener for this does nothing at all
      */
-        console.log("TCP client connected");
-        startCallback({"connectionType": "DATASOURCE", "id": "TCP"});
+    console.log("TCP client connected");
+    startCallback({"connectionType": "DATASOURCE", "id": "TCP"});
     //if (matlabClientList.indexOf(tcpSocket) ==! -1) {
     matlabClientList.push(tcpSocket);
     //}
@@ -85,68 +87,69 @@ net.createServer(function (tcpSocket) {
     // Handle incoming messages from clients.
     tcpSocket.on('data', function (data) {
         var dataSplit = data.toString().trim().split("&");
-	//console.log("Initial Data: " + data.toString());
-	//console.log("===");
-	//console.log("dataSplit: " + dataSplit);
-	//console.log("========");
+        //console.log("Initial Data: " + data.toString());
+        //console.log("===");
+        //console.log("dataSplit: " + dataSplit);
+        //console.log("========");
         //for (var s in dataSplit) {
-	dataSplit.forEach(function(element, index, array) {
-	    //console.log("element: " + element);
-	    if(element !== "")
-	    {
-		var err = false;
-		try {
-			var parsedData = JSON.parse(element)
-		} catch(e) {
-			err = true;
-            console.log("JSON error on element");
-                        if (firstPartString != null)
-                        {
-                          try{
-                           parsedData = JSON.parse(firstPartString + element);
-                              console.log("WE had a valid concatenation");
-                              element = firstPartString + element;
-                           err = false;
-                          }
-                          catch(e){
-                           err = true;
-                           firstPartString = element;
-                           console.log("we still had an invalid object");
-                          }
+        dataSplit.forEach(function (element, index, array) {
+            //console.log("element: " + element);
+            if (element !== "") {
+                var err = false;
+                try {
+                    var parsedData = JSON.parse(element)
+                } catch (e) {
+                    err = true;
+                    //console.log("JSON error on the element");
+                    if (firstPartString != null) {
+                        try {
+                            parsedData = JSON.parse(firstPartString + element);
+                            //console.log("WE had a valid concatenation");
+                            element = firstPartString + element;
+                            firstPartString = null;
+                            err = false;
                         }
-                        else{
-                         firstPartString = element;
+                        catch (e) {
+                            err = true;
+                            firstPartString = element;
+                            console.log("we still had an invalid object");
                         }
-		}
-		if(err === false) {
-            		//console.log("_________age: " + parsedData.age);
-			if(parsedData.age == "NEW")
-			{
-                broadcastToMatlab(element);
-				newCallback(element);
-			}
-			else if(parsedData.age == "OLD")
-			{
-                broadcastToMatlab(element);
-				updateCallback(element);
-			}
-			else if(parsedData.age == "LOST")
-			{
-                broadcastToMatlab(element);
-				removeCallback(element);
-			}
-			else
-			{
-				console.log("dataSplit.foreach: Invalid age");
-				console.log(parsedData);
-				console.log(parsedData.age);
-			}
-		}
-		err = false;
-	    }
+                    }
+                    else {
+                        firstPartString = element;
+                    }
+                }
+                if (err === false) {
+                    //console.log("_________age: " + parsedData.age);
+                    if (parsedData.age == "NEW") {
+                        broadcastToMatlab(element);
+                        newCallback(element);
+                    }
+                    else if (parsedData.age == "OLD") {
+                        broadcastToMatlab(element);
+                        updateCallback(element);
+                    }
+                    else if (parsedData.age == "LOST") {
+                        broadcastToMatlab(element);
+                        removeCallback(element);
+                    }
+                    else {
+                        console.log("dataSplit.foreach: Invalid age");
+                        console.log(parsedData);
+                        console.log(parsedData.age);
+                    }
+                }
+                err = false;
+            }
         });
     });
-     
+
+    tcpSocket.on('error', function (err) {
+        console.log('we received an error from the socket, should we end it?');
+        console.log(err);
+        //may want to close the socket
+    });
+
     // Remove the client from the list when it leaves
     tcpSocket.on('end', function () {
         console.log("TCP client disconnected");
@@ -203,15 +206,15 @@ var startCallback = function(data) {
 };
 
 var newCallback = function(inData) {
-	var data;
-	if(typeof inData === 'object') {
-		data = inData
-	}
-	else {
-		data = JSON.parse(inData);
-	}
+    var data;
+    if (typeof inData === 'object') {
+        data = inData
+    }
+    else {
+        data = JSON.parse(inData);
+    }
 
-	//console.log("==========================" + data.connectionType);
+    //console.log("==========================" + data.connectionType);
     if (checkBlobJSON(data) === true) {
         if (data.connectionType === "LISTENER") {
             console.log("Listener sent a 'new' update: " + JSON.stringify(data));
@@ -231,16 +234,16 @@ var newCallback = function(inData) {
 };
 
 var updateCallback = function(inData) {
-	var data;
+    var data;
 
-	if(typeof inData === 'object') {
-		data = inData
-	}
-	else {
-		data = JSON.parse(inData);
-	}
-	
-	//console.log("________________________" + data);
+    if (typeof inData === 'object') {
+        data = inData
+    }
+    else {
+        data = JSON.parse(inData);
+    }
+
+    //console.log("________________________" + data);
     if (checkBlobJSON(data) === true) {
         if (data.connectionType === "LISTENER") {
             console.log("Listener sent an update: " + JSON.stringify(data));
@@ -258,14 +261,14 @@ var updateCallback = function(inData) {
 };
 
 var removeCallback = function(inData) {
-	var data;
+    var data;
 
-	if(typeof inData === 'object') {
-		data = inData
-	}
-	else {
-		data = JSON.parse(inData);
-	}
+    if (typeof inData === 'object') {
+        data = inData
+    }
+    else {
+        data = JSON.parse(inData);
+    }
     if (checkBlobJSON(data) === true) {
         if (data.connectionType === "LISTENER") {
             console.log("Listener sent a 'remove' update: " + JSON.stringify(data));
