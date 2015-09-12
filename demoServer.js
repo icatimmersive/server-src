@@ -146,7 +146,13 @@ net.createServer(function (tcpSocket) {
 	    }
         });
     });
-     
+
+    tcpSocket.on('error', function (err) {
+        console.log('we received an error from the socket, should we end it?');
+        console.log(err);
+        //may want to close the socket
+    });
+
     // Remove the client from the list when it leaves
     tcpSocket.on('end', function () {
         console.log("TCP client disconnected");
