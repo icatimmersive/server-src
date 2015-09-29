@@ -1,8 +1,31 @@
-var url    = require('url');
-var http   = require('http');
-var net    = require('net');
-var io     = require('socket.io').listen(8888);
+var url = require('url');
+var http = require('http');
+var net = require('net');
+var io = require('socket.io').listen(8888);
+var fs = require('fs');
 
+var LOG_FILE_NAME = 'blobLog.txt';
+
+var arguments = process.argv.slice(2);
+var fileLog = false;
+if (arguments.indexOf('-log') > -1) //if it contains '-log'
+{
+    fileLog = true;
+    console.log('enabled writing blobs to file');
+}
+
+/**
+ * writes to the file if file logging is enabled
+ */
+function logBlob(blob) {
+    if (fileLog) {
+        fs.appendFile(LOG_FILE_NAME, new Date() + '\t' + blob + '\n', function (err) {
+            if (err) {
+                console.log('an error occurred ' + err);
+            }
+        })
+    }
+}
 /**
  * allows us to remove a specific element of the array
  */
@@ -26,32 +49,52 @@ function checkTCPJSON(data) {
     if (data.NEWDATA === null) {
         return false;
     }
-    if(data.OLDDATA === null) {return false;}
+    if (data.OLDDATA === null) {
+        return false;
+    }
 
     return true;
 }
 
 function checkBlobJSON(data) {
-    if (data.age === null) {return false;}
-    if (data.connectionType === null) {return false;}
-    if (data.id === null) {return false;}
+    if (data.age === null) {
+        return false;
+    }
+    if (data.connectionType === null) {
+        return false;
+    }
+    if (data.id === null) {
+        return false;
+    }
 
-    if (data.origin === null) {return false;}
+    if (data.origin === null) {
+        return false;
+    }
     //if (data.origin.x === null) {return false;}
     //if (data.origin.y === null) {return false;}
     //if (data.origin.z === null) {return false;}
 
-    if (data.orientation === null) {return false;}
+    if (data.orientation === null) {
+        return false;
+    }
     //if (data.orientation.x === null) {return false;}
     //if (data.orientation.y === null) {return false;}
     //if (data.orientation.z === null) {return false;}
     //if (data.orientation.theta === null) {return false;}
 
-    if (data.source === null) {return false;}
-    if (data.updateTime === null) {return false;}
-    if (data.creationTime === null) {return false;}
+    if (data.source === null) {
+        return false;
+    }
+    if (data.updateTime === null) {
+        return false;
+    }
+    if (data.creationTime === null) {
+        return false;
+    }
 
-    if (data.boundingBox === null) {return false;}
+    if (data.boundingBox === null) {
+        return false;
+    }
     //if (data.boundingBox.x === null) {return false;}
     //if (data.boundingBox.y === null) {return false;}
     //if (data.boundingBox.width === null) {return false;}
@@ -122,14 +165,17 @@ net.createServer(function (tcpSocket) {
                 if (err === false) {
                     //console.log("_________age: " + parsedData.age);
                     if (parsedData.age == "NEW") {
+                        logBlob(element);
                         broadcastToMatlab(element);
                         newCallback(element);
                     }
                     else if (parsedData.age == "OLD") {
+                        logBlob(element);
                         broadcastToMatlab(element);
                         updateCallback(element);
                     }
                     else if (parsedData.age == "LOST") {
+                        logBlob(element);
                         broadcastToMatlab(element);
                         removeCallback(element);
                     }
@@ -158,7 +204,7 @@ net.createServer(function (tcpSocket) {
 }).listen(9999);
 
 // Socket.io definitions
-io.sockets.on('connection', function(webSocket) {
+io.sockets.on('connection', function (webSocket) {
     WEBSOCKET = webSocket;
 
     webSocket.on("start", startCallback);
@@ -177,20 +223,19 @@ var BLOBROOM = "BLOBROOM";
 var WEBSOCKET;
 
 // Socket.io callback functions
-var startCallback = function(data) {
-    if (data.connectionType !== null && data.id !== null)
-    {
+var startCallback = function (data) {
+    if (data.connectionType !== null && data.id !== null) {
         console.log("Starting new connection: " + JSON.stringify(data));
 
-        if(data.connectionType === "DATASOURCE") {
+        if (data.connectionType === "DATASOURCE") {
             console.log("New blob with id: " + data.id);
             io.sockets.in(BLOBROOM).emit("addSource", data);
         }
-        else if(data.connectionType === "LISTENER") {
+        else if (data.connectionType === "LISTENER") {
             console.log("New listener with id: " + data.id);
             WEBSOCKET.join(BLOBROOM);
         }
-        else if(data.connectionType === "TWOWAY") {
+        else if (data.connectionType === "TWOWAY") {
             console.log("New two way connection with id: " + data.id);
             io.sockets.in(BLOBROOM).emit("addSource", data);
             WEBSOCKET.join(BLOBROOM);
@@ -199,13 +244,12 @@ var startCallback = function(data) {
             console.log("Invalid connection type: " + JSON.stringify(data))
         }
     }
-    else
-    {
+    else {
         console.log("startCallback JSON ERROR: " + JSON.stringify(data));
     }
 };
 
-var newCallback = function(inData) {
+var newCallback = function (inData) {
     var data;
     if (typeof inData === 'object') {
         data = inData
@@ -227,13 +271,12 @@ var newCallback = function(inData) {
             console.log("newCallback Invalid connection type: " + JSON.stringify(data));
         }
     }
-    else
-    {
+    else {
         console.log("newCallback JSON ERROR: " + JSON.stringify(data));
     }
 };
 
-var updateCallback = function(inData) {
+var updateCallback = function (inData) {
     var data;
 
     if (typeof inData === 'object') {
@@ -260,7 +303,7 @@ var updateCallback = function(inData) {
     }
 };
 
-var removeCallback = function(inData) {
+var removeCallback = function (inData) {
     var data;
 
     if (typeof inData === 'object') {
@@ -285,6 +328,6 @@ var removeCallback = function(inData) {
     }
 };
 
-var disconnectCallback = function() {
+var disconnectCallback = function () {
     console.log('disconnected')
 };
