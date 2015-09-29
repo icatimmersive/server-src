@@ -2,7 +2,23 @@ var url    = require('url');
 var http   = require('http');
 var net    = require('net');
 var io     = require('socket.io').listen(8888);
+var fs = require('fs');
 
+var LOG_FILE_NAME = 'blobLog.txt';
+
+var fileLog = true;
+/**
+ * writes to the file if file logging is enabled
+ */
+function logBlob(blob) {
+    if (fileLog) {
+        fs.appendFile(LOG_FILE_NAME, new Date() + '\t' + blob + '\n', function (err) {
+            if (err) {
+                console.log('an error occurred ' + err);
+            }
+        })
+    }
+}
 /**
  * allows us to remove a specific element of the array
  */
@@ -122,14 +138,17 @@ net.createServer(function (tcpSocket) {
                 if (err === false) {
                     //console.log("_________age: " + parsedData.age);
                     if (parsedData.age == "NEW") {
+                        logBlob(element);
                         broadcastToMatlab(element);
                         newCallback(element);
                     }
                     else if (parsedData.age == "OLD") {
+                        logBlob(element);
                         broadcastToMatlab(element);
                         updateCallback(element);
                     }
                     else if (parsedData.age == "LOST") {
+                        logBlob(element);
                         broadcastToMatlab(element);
                         removeCallback(element);
                     }

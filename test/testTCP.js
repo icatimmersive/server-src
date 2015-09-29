@@ -131,6 +131,7 @@ describe('TCPServer', function () {
     var updatedTime = "now";
     var creationTime = "recently";
     var boundingBox = {x: 0.0, y: 0.0, width: 10.0, height: 10.0};
+    var cameraID = 1;
     beforeEach(function (done) {
         if (matlabSender != null) {
             matlabSender.removeAllListeners();
@@ -182,7 +183,8 @@ describe('TCPServer', function () {
             updatedTime: updatedTime,
             creationTime: creationTime,
             boundingBox: boundingBox,
-            age: "OLD"
+            age: "OLD",
+            cameraID: cameraID
         };
 
 
@@ -218,7 +220,8 @@ describe('TCPServer', function () {
                 updatedTime: updatedTime,
                 creationTime: creationTime,
                 boundingBox: boundingBox,
-                age: "LOST"
+                age: "LOST",
+                cameraID: cameraID
             };
             it("should receive the blob that was removed to the listener", function (done) {
                 assertReceive(client, removeData, done);
