@@ -2,4 +2,9 @@ This project stores the current working implementation of the mirror worlds serv
 
 To install cd into server-src and npm install (to get the dependencies)
 
-The server can then be run with node demoServer
+The server can then be run with  
+node demoServer 
+or 
+node demoserver -log
+
+-log will log all recieved blobs to a file
