@@ -1,0 +1,117 @@
+// Object full of new data, send this once.
+{
+  "NEWDATA": [
+    {
+      "age": "NEW",
+      "connectionType": "DATASOURCE",
+      "id": "0",
+      "origin": {
+        "x": 1.0,
+        "y": 2.0,
+        "z": 0.0
+      },
+      "orientation": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "theta": 0
+      },
+      "source": "MATLAB",
+      "updateTime": 0,
+      "creationTime": 0,
+      "boundingBox": {
+        "x": 1.0,
+        "y": 2.0,
+        "width": 5,
+        "height": 5
+      }
+    },
+    {
+      "age": "NEW",
+      "connectionType": "DATASOURCE",
+      "id": "1",
+      "origin": {
+        "x": 1.0,
+        "y": 2.0,
+        "z": 0.0
+      },
+      "orientation": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "theta": 0
+      },
+      "source": "MATLAB",
+      "updateTime": 0,
+      "creationTime": 0,
+      "boundingBox": {
+        "x": 1.0,
+        "y": 2.0,
+        "width": 5,
+        "height": 5
+      }
+    }
+  ],
+  "OLDDATA": []
+}
+// Object full of old data, send this as many times as you like
+{
+"NEWDATA": [],
+"OLDDATA": [
+{
+"age": "OLD",
+"connectionType": "DATASOURCE",
+"id": "0",
+"origin":
+{
+"x": 1.0,
+"y": 2.0,
+"z": 0.0
+},
+"orientation":
+{
+"x": 0,
+"y": 0,
+"z": 0,
+"theta": 0
+},
+"source": "MATLAB",
+"updateTime": 0,
+"creationTime": 0,
+"boundingBox":
+{
+"x": 1.0,
+"y": 2.0,
+"width": 5,
+"height": 5
+}
+},{
+"age": "OLD",
+"connectionType": "DATASOURCE",
+"id": "1",
+"origin":
+{
+"x": 1.0,
+"y": 2.0,
+"z": 0.0
+},
+"orientation":
+{
+"x": 0,
+"y":0,
+"z": 0,
+"theta": 0
+},
+"source": "MATLAB",
+"updateTime": 0,
+"creationTime": 0,
+"boundingBox":
+{
+"x": 1.0,
+"y": 2.0,
+"width": 5,
+"height": 5
+}
+}
+]
+}
