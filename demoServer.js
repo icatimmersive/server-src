@@ -3,7 +3,8 @@ var http = require('http');
 var net = require('net');
 var io = require('socket.io').listen(8888);
 var fs = require('fs');
-
+var BlobManager = require("./blobManager");
+var bm = new BlobManager(processCallback);
 var LOG_FILE_NAME = 'blobLog.txt';
 
 var arguments = process.argv.slice(2);
@@ -14,6 +15,26 @@ if (arguments.indexOf('-log') > -1) //if it contains '-log'
     console.log('enabled writing blobs to file');
 }
 
+
+function processCallback(blob) {
+    //do nothing right now
+    //but call the correct callback
+    if (blob.age == "NEW") {
+        console.log('doing newCallback');
+        newCallback(blob);
+    }
+    else if (blob.age == "OLD") {
+        console.log('update callback');
+        updateCallback(blob);
+    }
+    else if (blob.age == "LOST") {
+        console.log('remove callback');
+        removeCallback(blob);
+    }
+    else {
+        console.log('GOT AN INVALID AGED BLOB SEND BACK FROM THE MANAGER');
+    }
+}
 /**
  * writes to the file if file logging is enabled
  */
@@ -167,17 +188,17 @@ net.createServer(function (tcpSocket) {
                     if (parsedData.age == "NEW") {
                         logBlob(element);
                         broadcastToMatlab(element);
-                        newCallback(element);
+                        bm.processBlob(parsedData);
                     }
                     else if (parsedData.age == "OLD") {
                         logBlob(element);
                         broadcastToMatlab(element);
-                        updateCallback(element);
+                        bm.processBlob(parsedData);
                     }
                     else if (parsedData.age == "LOST") {
                         logBlob(element);
                         broadcastToMatlab(element);
-                        removeCallback(element);
+                        bm.processBlob(parsedData);
                     }
                     else {
                         console.log("dataSplit.foreach: Invalid age");
