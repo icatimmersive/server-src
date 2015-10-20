@@ -8,63 +8,88 @@
 
 var method = BlobManager.prototype;
 
+
 function BlobManager(sendBlobCallback) {
-    this._blobCallback = sendBlobCallback;
-    this.cameraTable = {};
-}
+    var Threads = require('webworker-threads');
+    this.t = Threads.create();
+    this.t.on('sendBlob', function (blob) {
+        sendBlobCallback(JSON.parse(blob))
+    });
+    function evalCallbacks() {
+        var cameraTable = {};
+        thread.on('getAllBlobs', function () {
+            var allBlobList = [];
+            for (var idList in cameraTable) {
+                if (cameraTable.hasOwnProperty(idList)) {
+                    var idObj = cameraTable[idList];
+                    for (var blob in idObj) {
+                        if (idObj.hasOwnProperty(blob)) {
+                            allBlobList.push(idObj[blob]);
 
-method.placeInTable = function (blob) {
-    var thisCID = blob.cameraID;
-    if (!(thisCID in this.cameraTable)) {
-        this.cameraTable[thisCID] = {};
-    }
-    this.cameraTable[thisCID][blob.id] = blob;
-};
-
-method.removeFromTable = function (blob) {
-    try {
-        delete(this.cameraTable[blob.cameraID][blob.id])
-    }
-    catch (err) {
-        console.log("Could Not remove blob: " + err);
-    }
-};
-
-method.getAllBlobs = function () {
-    var allBlobList = [];
-    for (var idList in this.cameraTable) {
-        if (this.cameraTable.hasOwnProperty(idList)) {
-            var idObj = this.cameraTable[idList];
-            for (var blob in idObj) {
-                if (idObj.hasOwnProperty(blob)) {
-                    allBlobList.push(idObj[blob]);
-
+                        }
+                    }
                 }
             }
+            //emit event
+            // return allBlobList;
+            thread.emit('allBlobs', JSON.stringify(allBlobList));
+        });
+        function placeInTable(blob, cameraTable) {
+            var thisCID = blob.cameraID;
+            if (!(thisCID in cameraTable)) {
+                cameraTable[thisCID] = {};
+            }
+            cameraTable[thisCID][blob.id] = blob;
         }
+
+        function removeFromTable(blob, cameraTable) {
+            try {
+                delete(cameraTable[blob.cameraID][blob.id])
+            }
+            catch (err) {
+                console.log("Could Not remove blob: " + err);
+            }
+        }
+
+        function processRemove(blob, cameraTable) {
+            removeFromTable(blob, cameraTable);
+            thread.emit('sendBlob', JSON.stringify(blob));
+        }
+
+        function processAdd(blob, cameraTable) {
+            placeInTable(blob, cameraTable);
+            thread.emit('sendBlob', JSON.stringify(blob));
+        }
+
+        function processBlob(blob, cameraTable) {
+            if (blob.age == "LOST") {
+                processRemove(blob, cameraTable);
+            }
+            else {
+                processAdd(blob, cameraTable);
+            }
+        }
+
+        thread.on('process', function (blobStr) {
+            var blob = JSON.parse(blobStr);
+            processBlob(blob, cameraTable);
+        });
     }
-    return allBlobList;
-};
+
+    this.t.eval(evalCallbacks);
+    this.t.eval('evalCallbacks()');
+}
 
 
-method.processRemove = function (blob) {
-    //just send back the blob
-    this._blobCallback(blob);
+method.getAllBlobs = function (callBack) {
+    this.t.on('allBlobs', function (listStr) {
+        callBack(JSON.parse(listStr));
+    });
+    this.t.emit('getAllBlobs');
 };
 
-method.processAdd = function (blob) {
-    //just send it right now
-    this._blobCallback(blob);
-};
 method.processBlob = function (blob) {
-    if (blob.age == "LOST") {
-        this.removeFromTable(blob);
-        this.processRemove(blob);
-    }
-    else {
-        this.placeInTable(blob);// now the blob is in the table
-        this.processAdd(blob);
-    }
+    this.t.emit('process', JSON.stringify(blob));
 };
 
 module.exports = BlobManager;

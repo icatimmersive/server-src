@@ -32,7 +32,7 @@ function processCallback(blob) {
         removeCallback(blob);
     }
     else {
-        console.log('GOT AN INVALID AGED BLOB SEND BACK FROM THE MANAGER');
+        console.log('GOT AN INVALID AGED BLOB SENT BACK FROM THE MANAGER');
     }
 }
 /**
@@ -78,49 +78,49 @@ function checkTCPJSON(data) {
 }
 
 function checkBlobJSON(data) {
-    if (data.age === null) {
+    if (!data.age) {
         return false;
     }
-    if (data.connectionType === null) {
-        return false;
-    }
-    if (data.id === null) {
+    //if (data.connectionType === null) {
+    //  return false;
+    //}
+    if (!data.id) {
         return false;
     }
 
-    if (data.origin === null) {
-        return false;
-    }
+    //if (data.origin === null) {
+    //  return false;
+    //}
     //if (data.origin.x === null) {return false;}
     //if (data.origin.y === null) {return false;}
     //if (data.origin.z === null) {return false;}
 
-    if (data.orientation === null) {
-        return false;
-    }
+//    if (data.orientation === null) {
+    //      return false;
+    //}
     //if (data.orientation.x === null) {return false;}
     //if (data.orientation.y === null) {return false;}
     //if (data.orientation.z === null) {return false;}
     //if (data.orientation.theta === null) {return false;}
 
-    if (data.source === null) {
-        return false;
-    }
-    if (data.updateTime === null) {
-        return false;
-    }
-    if (data.creationTime === null) {
-        return false;
-    }
-
-    if (data.boundingBox === null) {
-        return false;
-    }
+    //if (data.source === null) {
+    //    return false;
+    //}
+    //if (data.updateTime === null) {
+    //    return false;
+    //}
+    //if (data.creationTime === null) {
+    //    return false;
+    //}
+    //
+    //if (data.boundingBox === null) {
+    //    return false;
+    //}
     //if (data.boundingBox.x === null) {return false;}
     //if (data.boundingBox.y === null) {return false;}
     //if (data.boundingBox.width === null) {return false;}
     //if (data.boundingBox.height === null) {return false;}
-
+    console.log('VALID BLOB' + data.id);
     return true;
 }
 /**
@@ -188,17 +188,23 @@ net.createServer(function (tcpSocket) {
                     if (parsedData.age == "NEW") {
                         logBlob(element);
                         broadcastToMatlab(element);
-                        bm.processBlob(parsedData);
+                        if (checkBlobJSON(parsedData)) {
+                            bm.processBlob(parsedData);
+                        }
                     }
                     else if (parsedData.age == "OLD") {
                         logBlob(element);
                         broadcastToMatlab(element);
-                        bm.processBlob(parsedData);
+                        if (checkBlobJSON(parsedData)) {
+                            bm.processBlob(parsedData);
+                        }
                     }
                     else if (parsedData.age == "LOST") {
                         logBlob(element);
                         broadcastToMatlab(element);
-                        bm.processBlob(parsedData);
+                        if (checkBlobJSON(parsedData)) {
+                            bm.processBlob(parsedData);
+                        }
                     }
                     else {
                         console.log("dataSplit.foreach: Invalid age");
