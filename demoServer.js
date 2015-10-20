@@ -120,7 +120,6 @@ function checkBlobJSON(data) {
     //if (data.boundingBox.y === null) {return false;}
     //if (data.boundingBox.width === null) {return false;}
     //if (data.boundingBox.height === null) {return false;}
-    console.log('VALID BLOB' + data.id);
     return true;
 }
 /**
