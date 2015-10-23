@@ -7,6 +7,11 @@ var BlobManager = require("./blobManager");
 var bm = new BlobManager(processCallback);
 var LOG_FILE_NAME = 'blobLog.txt';
 
+var SegfaultHandler = require('segfault-handler');
+
+SegfaultHandler.registerHandler("crash.log");
+
+
 var arguments = process.argv.slice(2);
 var fileLog = false;
 if (arguments.indexOf('-log') > -1) //if it contains '-log'

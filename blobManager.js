@@ -63,7 +63,12 @@ function BlobManager(sendBlobCallback) {
             thread.emit('sendBlob', JSON.stringify(blob));
         }
 
+        function makeCoordGlobal(blob) {
+            //this is where you can implement your logic
+            return blob;
+        }
         function processBlob(blob, cameraTable) {
+            blob = makeCoordGlobal(blob);
             if (blob.age == "LOST") {
                 processRemove(blob, cameraTable);
             }
