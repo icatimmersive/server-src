@@ -1,3 +1,4 @@
+"use strict";
 var url = require('url');
 var http = require('http');
 var net = require('net');
@@ -12,9 +13,9 @@ var SegfaultHandler = require('segfault-handler');
 SegfaultHandler.registerHandler("crash.log");
 
 
-var arguments = process.argv.slice(2);
+var argum = process.argv.slice(2);
 var fileLog = false;
-if (arguments.indexOf('-log') > -1) //if it contains '-log'
+if (argum.indexOf('-log') > -1) //if it contains '-log'
 {
     fileLog = true;
     console.log('enabled writing blobs to file');

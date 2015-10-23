@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Created by Eric on 10/7/2015.
  */
@@ -54,12 +55,12 @@ function BlobManager(sendBlobCallback) {
         }
 
         function processRemove(blob, cameraTable) {
-            removeFromTable(blob, cameraTable);
+            //removeFromTable(blob, cameraTable);
             thread.emit('sendBlob', JSON.stringify(blob));
         }
 
         function processAdd(blob, cameraTable) {
-            placeInTable(blob, cameraTable);
+            //placeInTable(blob, cameraTable);
             thread.emit('sendBlob', JSON.stringify(blob));
         }
 
