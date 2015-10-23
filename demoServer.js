@@ -20,15 +20,15 @@ function processCallback(blob) {
     //do nothing right now
     //but call the correct callback
     if (blob.age == "NEW") {
-        console.log('doing newCallback');
+        //console.log('doing newCallback');
         newCallback(blob);
     }
     else if (blob.age == "OLD") {
-        console.log('update callback');
+        //console.log('update callback');
         updateCallback(blob);
     }
     else if (blob.age == "LOST") {
-        console.log('remove callback');
+        //console.log('remove callback');
         removeCallback(blob);
     }
     else {
@@ -126,12 +126,12 @@ function checkBlobJSON(data) {
  * Add an & to the end so matlab can parse multiple coming in
  * @param blobToSend the blob to be broadcast
  */
-var broadcastToMatlab = function (blobToSend) {
-    matlabClientList.forEach(function (socket) {
-        socket.write(blobToSend + "&");
-    })
-};
-var matlabClientList = [];
+//var broadcastToMatlab = function (blobToSend) {
+    //   matlabClientList.forEach(function (socket) {
+    //     socket.write(blobToSend + "&");
+    //})
+//};
+//var matlabClientList = [];
 // TCP socket definitions
 net.createServer(function (tcpSocket) {
     // Hook this data source into the system
@@ -142,7 +142,7 @@ net.createServer(function (tcpSocket) {
     console.log("TCP client connected");
     startCallback({"connectionType": "DATASOURCE", "id": "TCP"});
     //if (matlabClientList.indexOf(tcpSocket) ==! -1) {
-    matlabClientList.push(tcpSocket);
+    //  matlabClientList.push(tcpSocket);
     //}
 
 
@@ -186,21 +186,21 @@ net.createServer(function (tcpSocket) {
                     //console.log("_________age: " + parsedData.age);
                     if (parsedData.age == "NEW") {
                         logBlob(element);
-                        broadcastToMatlab(element);
+                        //                      broadcastToMatlab(element);
                         if (checkBlobJSON(parsedData)) {
                             bm.processBlob(parsedData);
                         }
                     }
                     else if (parsedData.age == "OLD") {
                         logBlob(element);
-                        broadcastToMatlab(element);
+                        //                    broadcastToMatlab(element);
                         if (checkBlobJSON(parsedData)) {
                             bm.processBlob(parsedData);
                         }
                     }
                     else if (parsedData.age == "LOST") {
                         logBlob(element);
-                        broadcastToMatlab(element);
+                        //                  broadcastToMatlab(element);
                         if (checkBlobJSON(parsedData)) {
                             bm.processBlob(parsedData);
                         }
@@ -219,13 +219,15 @@ net.createServer(function (tcpSocket) {
     tcpSocket.on('error', function (err) {
         console.log('we received an error from the socket, should we end it?');
         console.log(err);
+        console.log("TCP client disconnected");
+        //matlabClientList.remove(tcpSocket);
         //may want to close the socket
     });
 
     // Remove the client from the list when it leaves
     tcpSocket.on('end', function () {
         console.log("TCP client disconnected");
-        matlabClientList.remove(tcpSocket);
+        //matlabClientList.remove(tcpSocket);
     });
 }).listen(9999);
 

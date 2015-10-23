@@ -44,7 +44,9 @@ function BlobManager(sendBlobCallback) {
 
         function removeFromTable(blob, cameraTable) {
             try {
-                delete(cameraTable[blob.cameraID][blob.id])
+                if (!delete(cameraTable[blob.cameraID][blob.id])) {
+                    console.log('failed deleting blob: ' + JSON.stringify(blob));
+                }
             }
             catch (err) {
                 console.log("Could Not remove blob: " + err);
