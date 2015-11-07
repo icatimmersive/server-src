@@ -1,10 +1,23 @@
 /**
  * Created by Eric on 10/30/2015.
  */
-
-
 var io = require('socket.io')(8888);
 var net = require("net");
+var bm = require('./blobManager');
+
+processCallback = function (blob) {
+
+    if (blob.age == 'OLD') {
+        io.emit("updateBlob", data);
+    }
+    else if (blob.age == 'LOST') {
+        io.emit("removeBlob", data);
+    }
+    else if (blob.age == 'NEW') {
+        io.emit("newBlob", data);
+    }
+};
+var manager = new bm(processCallback);
 
 var tcpServer = net.createServer(function (socket) {
     console.log('TCP client connected');
@@ -29,11 +42,11 @@ var tcpServer = net.createServer(function (socket) {
                 firstPartStr = element;
                 return;
             }
-            if (parsedData.age == 'NEW') {
-                newCallback(parsedData);
-            }
-            else if (parsedData.age == 'OLD') {
+            if (parsedData.age == 'OLD') {
                 updateCallback(parsedData);
+            }
+            else if (parsedData.age == 'NEW') {
+                newCallback(parsedData);
             }
             else if (parsedData.age == 'LOST') {
                 removeCallback(parsedData);
@@ -52,8 +65,9 @@ var tcpServer = net.createServer(function (socket) {
         console.log('TCP client connection ended');
     })
 });
-
 tcpServer.listen(9999);
+
+
 io.on('connection', function (webSocket) {
 
     webSocket.once("start", startCallback);
@@ -79,7 +93,7 @@ var checkBlobJSON = function (data) {
 
 
 var startCallback = function (data) {
-    if (data.connectionType !== null && data.id !== null) {
+    if (data.connectionType && data.id !== null) {
         console.log("Starting new connection: " + JSON.stringify(data));
 
         if (data.connectionType === "DATASOURCE") {
@@ -108,7 +122,7 @@ var newCallback = function (data) {
             console.log("Listener sent a 'new' update: " + JSON.stringify(data));
         }
         else if (data.connectionType === "DATASOURCE" || data.connectionType === "TWOWAY") {
-            io.emit("newBlob", data);
+            manager.processBlob(data)
         }
         else {
             console.log("newCallback Invalid connection type: " + JSON.stringify(data));
@@ -125,7 +139,7 @@ var updateCallback = function (data) {
             console.log("Listener sent an update: " + JSON.stringify(data));
         }
         else if (data.connectionType === "DATASOURCE" || data.connectionType === "TWOWAY") {
-            io.emit("updateBlob", data);
+            manager.processBlob(data)
         }
         else {
             console.log("updateCallback Invalid connection type: " + JSON.stringify(data));
@@ -142,7 +156,7 @@ var removeCallback = function (data) {
             console.log("Listener sent a 'remove' update: " + JSON.stringify(data));
         }
         else if (data.connectionType === "DATASOURCE" || data.connectionType === "TWOWAY") {
-            io.emit("removeBlob", data);
+            manager.processBlob(data);
         }
         else {
             console.log("Invalid connection type: " + JSON.stringify(data));
