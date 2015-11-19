@@ -5,15 +5,15 @@ var io = require('socket.io')(8888);
 var net = require("net");
 var bm = require('./blobManager');
 
-processCallback = function (blob) {
+processCallback = function (data) {
 
-    if (blob.age == 'OLD') {
+    if (data.age == 'OLD') {
         io.emit("updateBlob", data);
     }
-    else if (blob.age == 'LOST') {
+    else if (data.age == 'LOST') {
         io.emit("removeBlob", data);
     }
-    else if (blob.age == 'NEW') {
+    else if (data.age == 'NEW') {
         io.emit("newBlob", data);
     }
 };
@@ -36,7 +36,7 @@ var tcpServer = net.createServer(function (socket) {
                         element = firstPartStr + element;
                     }
                     catch (e) {
-                        console.log('invalid blob combination ', firstPartStr + element);
+                        //console.log('invalid blob combination ', firstPartStr + element);
                     }
                 }
                 firstPartStr = element;
@@ -82,13 +82,13 @@ io.on('connection', function (webSocket) {
 });
 
 var checkBlobJSON = function (data) {
-    if (!data.age) {
-        return false;
-    }
-    if (!data.id) {
-        return false;
-    }
-    return data.cameraID;
+//    if (!data.age) {
+//        return false;
+//    }
+//    if (!data.id) {
+//        return false;
+//    }
+    return true;
 };
 
 
