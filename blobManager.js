@@ -115,7 +115,7 @@ function processAdd(blob, callback) {
 }
 
 method.processBlob = function (blob) {
-    blob = makeCoordinateGlobal(blob, this.GlobalCoordinateTable);
+    //blob = makeCoordinateGlobal(blob, this.GlobalCoordinateTable);
     if (blob.age == "LOST") {
         processRemove(blob, this.callback);
     }
