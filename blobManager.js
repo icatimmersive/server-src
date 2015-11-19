@@ -32,7 +32,7 @@ function BlobManager(sendBlobCallback) {
 
 }
 
-function makeCoordinateGlobal(data) {
+function makeCoordinateGlobal(data, table) {
 
     var origx = data.origin.x;
     var origy = data.origin.y;
@@ -41,7 +41,7 @@ function makeCoordinateGlobal(data) {
     var imageHeight = data.boundingBox.image_height;
     var cameraId = data.cameraID;
 
-    var area = getRect(cameraId);
+    var area = getRect(cameraId, table);
     var xM = origx / imageWidth * area.width;
     var zM = origy / imageHeight * area.height;
 
@@ -62,8 +62,8 @@ function makeCoordinateGlobal(data) {
 //Coordinate system definitions
 //They are defined in ft for ease because blueprints are in ft
 //convert to meters at end of function.
-function getRect(cameraId) {
-    var r = this.GlobalCoordinateTable[cameraId];
+function getRect(cameraId, table) {
+    var r = table[cameraId];
     r = toM(r);
     return r;
 }
@@ -115,7 +115,7 @@ function processAdd(blob, callback) {
 }
 
 method.processBlob = function (blob) {
-    blob = makeCoordinateGlobal(blob);
+    blob = makeCoordinateGlobal(blob, this.GlobalCoordinateTable);
     if (blob.age == "LOST") {
         processRemove(blob, this.callback);
     }
