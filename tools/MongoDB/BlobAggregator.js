@@ -7,9 +7,15 @@
 
 process.stdin.resume();
 process.stdin.setEncoding('utf8');
-var help = 'This will contain help text';
+var help = 'This script will open a connection to a mongoDB server on localhost and stream all blobs to mongoDB\n' +
+    'The Usage is :\n' +
+    'node blobAggregator.js <database suffix to use>';
 var util = require('util');
 console.log('please start mongoDB, press enter once done or -help for more info');
+var specificDB = '';
+if (process.argv.length == 3) {
+    specificDB = process.argv[2];
+}
 process.stdin.on('data', function (text) {
     text = text.toString().trim();
     if (text == '-help') {
@@ -19,7 +25,7 @@ process.stdin.on('data', function (text) {
         process.stdin.end();
         var MongoClient = require('mongodb').MongoClient;
         var assert = require('assert');
-        var url = 'mongodb://localhost:27017/production';
+        var url = 'mongodb://localhost:27017/production' + specificDB;
         console.log('attempting to connect to mongoDB with url: ', url);
         MongoClient.connect(url, function (err, db) {
             assert.equal(null, err);
@@ -42,7 +48,8 @@ process.stdin.on('data', function (text) {
 
             socket.on('updateBlob', function (blob) {
                 db.collection('updateBlobs').insertOne({timestamp: new Date(), blob: blob});
-                console.log('updateBlob');
+                //console.log('updateBlob');
+                //logging update blobs will spit out too much to the console to be readable
             });
 
             socket.on('removeBlob', function (blob) {
