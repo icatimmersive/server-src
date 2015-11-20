@@ -6,6 +6,7 @@ var requestInterval = 1000; //miliseconds
 
 var blobList = [];
 var socket = require('socket.io-client')('http://dev.mirrorworlds.icat.vt.edu:8888');
+socket.emit('start', {connectionType: 'LISTENER'});
 socket.on('connect', function () {
     console.log('connected to server!');
 });
@@ -14,6 +15,18 @@ socket.on('error', function (err) {
 });
 var rl = require('readline').createInterface({
     input: require('fs').createReadStream(LOG_FILE_NAME)
+});
+
+socket.on('newBlob', function (blob) {
+    console.log('newblob');
+});
+
+socket.on('updateBlob', function (blob) {
+    console.log('updateBlob');
+});
+
+socket.on('removeBlob', function (blob) {
+    console.log('removedBlob');
 });
 
 rl.on('line', function (line) {
@@ -26,7 +39,7 @@ rl.on('line', function (line) {
 });
 rl.on('close', function () {
     console.log('We have ' + blobList.length + ' blobs read');
-    sendData();
+    //sendData();
 });
 
 function sendData() {
