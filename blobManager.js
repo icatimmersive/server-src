@@ -8,28 +8,28 @@
  */
 
 var method = BlobManager.prototype;
+    var GlobalCoordinateTable = [
+	    {},
+            //observation room camera
+            {x: 0.0, y: 0.0, z: -24.0, width: 24.0, height: 19.0, theta: Math.PI},
+           
+	     //learning lab 1st camera
+            {x: 0.0, y: 0.0, z: 0.0, width: 24.0, height: 16.0, theta: 0.0},
+            
+	    //learning lab 2nd camera
+            {x: -16.0, y: 0.0, z: 0.0, width: 24.0, height: 16.0, theta: 0.0},
+            
+	    //learning lab 3rd camera
+            {x: -48.0, y: 0.0, z: -24.0, width: 24.0, height: 16.0, theta: Math.PI},
+            
+	    //learning lab 4th camera
+            {x: -64.0, y: 0.0, z: -24.0, width: 24.0, height: 19.0, theta: Math.PI}
+    ];
+
 
 
 function BlobManager(sendBlobCallback) {
     this.callback = sendBlobCallback;
-    this.GlobalCoordinateTable = {
-
-        //observation room camera
-        1: {x: 0, y: 0, z: -24, width: 24, height: 19, theta: Math.PI},
-
-        //learning lab 1st camera
-        2: {x: 0, y: 0, z: 0, width: 24, height: 16, theta: 0},
-
-        //learning lab 2nd camera
-        3: {x: -16, y: 0, z: 0, width: 24, height: 16, theta: 0},
-
-        //learning lab 3rd camera
-        4: {x: -48, y: 0, z: -24, width: 24, height: 16, theta: Math.PI},
-
-        //learning lab 4th camera
-        5: {x: -64, y: 0, z: -24, width: 24, height: 19, theta: Math.PI}
-    };
-
 }
 
 function makeCoordinateGlobal(data, table) {
@@ -42,8 +42,8 @@ function makeCoordinateGlobal(data, table) {
     var cameraId = data.cameraID;
 
     var area = getRect(cameraId, table);
-    var xM = origx / imageWidth * area.width;
-    var zM = origy / imageHeight * area.height;
+    var xM = ((origx)*1.0) / (imageWidth * area.width * 1.0);
+    var zM = (origy* 1.0) / (imageHeight * area.height * 1.0);
 
     var sin = Math.sin(area.theta);
     var cos = -Math.cos(area.theta);
@@ -63,7 +63,9 @@ function makeCoordinateGlobal(data, table) {
 //They are defined in ft for ease because blueprints are in ft
 //convert to meters at end of function.
 function getRect(cameraId, table) {
+  //  console.log(cameraId);
     var r = table[cameraId];
+  //  console.log(JSON.stringify(r));
     r = toM(r);
     return r;
 }
@@ -71,8 +73,10 @@ function getRect(cameraId, table) {
 var M_PER_FT = .3048;
 function toM(rect) {
     rect.x *= M_PER_FT;
+//    console.log(rect.x);
     rect.y *= M_PER_FT;
     rect.z *= M_PER_FT;
+    //console.log(rect.z);
     rect.width *= M_PER_FT;
     rect.height *= M_PER_FT;
     return rect;
@@ -115,7 +119,7 @@ function processAdd(blob, callback) {
 }
 
 method.processBlob = function (blob) {
-    //blob = makeCoordinateGlobal(blob, this.GlobalCoordinateTable);
+//    blob = makeCoordinateGlobal(blob, GlobalCoordinateTable);
     if (blob.age == "LOST") {
         processRemove(blob, this.callback);
     }
