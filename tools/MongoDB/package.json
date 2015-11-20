@@ -1,0 +1,7 @@
+{
+  "name": "BlobAggregator",
+  "version": "0.0.1",
+  "dependencies": {
+    "mongodb": "^2.0.47"
+  }
+}
