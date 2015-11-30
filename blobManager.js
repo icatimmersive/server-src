@@ -30,6 +30,13 @@ var method = BlobManager.prototype;
 
 function BlobManager(sendBlobCallback) {
     this.callback = sendBlobCallback;
+    function convertToMeters(table) {
+        table.forEach(function (elem) {
+            elem = toM(elem);
+        })
+    }
+
+    convertToMeters(GlobalCoordinateTable);
 }
 
 function makeCoordinateGlobal(data, table) {
@@ -42,8 +49,8 @@ function makeCoordinateGlobal(data, table) {
     var cameraId = data.cameraID;
 
     var area = getRect(cameraId, table);
-    var xM = ((origx)*1.0) / (imageWidth * area.width * 1.0);
-    var zM = (origy* 1.0) / (imageHeight * area.height * 1.0);
+    var xM = ((origx) * 1.0) / (imageWidth * area.width);
+    var zM = (origy * 1.0) / (imageHeight * area.height);
 
     var sin = Math.sin(area.theta);
     var cos = -Math.cos(area.theta);
@@ -64,10 +71,9 @@ function makeCoordinateGlobal(data, table) {
 //convert to meters at end of function.
 function getRect(cameraId, table) {
   //  console.log(cameraId);
-    var r = table[cameraId];
-  //  console.log(JSON.stringify(r));
-    r = toM(r);
-    return r;
+    return table[cameraId];
+    //console.log(JSON.stringify(r));
+    //r = toM(r);
 }
 
 var M_PER_FT = .3048;
@@ -119,7 +125,7 @@ function processAdd(blob, callback) {
 }
 
 method.processBlob = function (blob) {
-//    blob = makeCoordinateGlobal(blob, GlobalCoordinateTable);
+    blob = makeCoordinateGlobal(blob, GlobalCoordinateTable);
     if (blob.age == "LOST") {
         processRemove(blob, this.callback);
     }
