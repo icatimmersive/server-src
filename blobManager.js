@@ -51,6 +51,11 @@ function makeCoordinateGlobal(data, table) {
     var cameraId = data.cameraID;
 
     var area = getRect(cameraId, table);
+    if (area.hasOwnProperty('invalid')) {
+        //we have a bad camera ID
+        console.log('Did not have cameraID:' + cameraId);
+        return area;
+    }
     var xM = origx / imageWidth * area.width;
     var zM = origy / imageHeight * area.height;
 
@@ -73,7 +78,7 @@ function makeCoordinateGlobal(data, table) {
 function getRect(cameraId, table) {
   //  console.log(cameraId);
     if (!table.hasOwnProperty(cameraId)) {
-        return {x: 0.0, y: 0.0, z: 0.0, width: 0.0, height: 0.0, theta: 0.0};
+        return {'invalid': true};
     }
     return table[cameraId];
     //console.log(JSON.stringify(r));
@@ -130,6 +135,10 @@ function processAdd(blob, callback) {
 
 method.processBlob = function (blob) {
     blob = makeCoordinateGlobal(blob, GlobalCoordinateTable);
+    if (blob.hasOwnProperty('invalid')) {
+        //we are done, do not send this blob
+        return;
+    }
     if (blob.age == "LOST") {
         processRemove(blob, this.callback);
     }
