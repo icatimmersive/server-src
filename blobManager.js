@@ -23,8 +23,7 @@ var GlobalCoordinateTable = {
 
 	    //learning lab 4th camera
         5: {x: -64.0, y: 0.0, z: -24.0, width: 24.0, height: 19.0, theta: Math.PI}
-    }
-    ;
+};
 
 
 
@@ -52,8 +51,8 @@ function makeCoordinateGlobal(data, table) {
     var cameraId = data.cameraID;
 
     var area = getRect(cameraId, table);
-    var xM = ((origx) * 1.0) / (imageWidth * area.width);
-    var zM = (origy * 1.0) / (imageHeight * area.height);
+    var xM = origx / imageWidth * area.width;
+    var zM = origy / imageHeight * area.height;
 
     var sin = Math.sin(area.theta);
     var cos = -Math.cos(area.theta);
@@ -65,7 +64,6 @@ function makeCoordinateGlobal(data, table) {
     data.origin.x = globalXM;
     data.origin.y = globalYM;
     data.origin.z = globalZM;
-
     return data;
 }
 
