@@ -8,31 +8,31 @@
  */
 
 var method = BlobManager.prototype;
-    var GlobalCoordinateTable = [
-	    {},
+var GlobalCoordinateTable = {
             //observation room camera
-            {x: 0.0, y: 0.0, z: -24.0, width: 24.0, height: 19.0, theta: Math.PI},
-           
+        1: {x: 0.0, y: 0.0, z: -24.0, width: 24.0, height: 19.0, theta: Math.PI},
+
 	     //learning lab 1st camera
-            {x: 0.0, y: 0.0, z: 0.0, width: 24.0, height: 16.0, theta: 0.0},
-            
+        2: {x: 0.0, y: 0.0, z: 0.0, width: 24.0, height: 16.0, theta: 0.0},
+
 	    //learning lab 2nd camera
-            {x: -16.0, y: 0.0, z: 0.0, width: 24.0, height: 16.0, theta: 0.0},
-            
+        3: {x: -16.0, y: 0.0, z: 0.0, width: 24.0, height: 16.0, theta: 0.0},
+
 	    //learning lab 3rd camera
-            {x: -48.0, y: 0.0, z: -24.0, width: 24.0, height: 16.0, theta: Math.PI},
-            
+        4: {x: -48.0, y: 0.0, z: -24.0, width: 24.0, height: 16.0, theta: Math.PI},
+
 	    //learning lab 4th camera
-            {x: -64.0, y: 0.0, z: -24.0, width: 24.0, height: 19.0, theta: Math.PI}
-    ];
+        5: {x: -64.0, y: 0.0, z: -24.0, width: 24.0, height: 19.0, theta: Math.PI}
+    }
+    ;
 
 
 
 function BlobManager(sendBlobCallback) {
     this.callback = sendBlobCallback;
     function convertToMeters(table) {
-        table.forEach(function (elem) {
-            elem = toM(elem);
+        table.forEach(function (elem, idx) {
+            table[idx] = toM(elem);
         })
     }
 
@@ -71,6 +71,9 @@ function makeCoordinateGlobal(data, table) {
 //convert to meters at end of function.
 function getRect(cameraId, table) {
   //  console.log(cameraId);
+    if (!table.hasOwnProperty(cameraId)) {
+        return {x: 0.0, y: 0.0, z: 0.0, width: 0.0, height: 0.0, theta: 0.0};
+    }
     return table[cameraId];
     //console.log(JSON.stringify(r));
     //r = toM(r);
