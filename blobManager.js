@@ -22,7 +22,18 @@ var GlobalCoordinateTable = {
         4: {x: -48.0, y: 0.0, z: -24.0, width: 24.0, height: 16.0, theta: Math.PI},
 
 	    //learning lab 4th camera
-        5: {x: -64.0, y: 0.0, z: -24.0, width: 24.0, height: 19.0, theta: Math.PI}
+    5: {x: -64.0, y: 0.0, z: -24.0, width: 24.0, height: 19.0, theta: Math.PI},
+
+
+    6: {x: 19.0, y: 0.0, z: 6.0, width: 6.0, height: 19.0, theta: 0.0},
+
+    7: {x: 0.0, y: 0.0, z: 6.0, width: 6.0, height: 16.0, theta: 0.0},
+
+    8: {x: -16.0, y: 0.0, z: 6.0, width: 6.0, height: 16.0, theta: 0.0},
+
+    9: {x: -32.0, y: 0.0, z: 6.0, width: 6.0, height: 16.0, theta: 0.0},
+
+    10: {x: -48.0, y: 0.0, z: 6.0, width: 6.0, height: 16.0, theta: 0.0}
 };
 
 
