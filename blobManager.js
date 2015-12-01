@@ -31,9 +31,12 @@ var GlobalCoordinateTable = {
 function BlobManager(sendBlobCallback) {
     this.callback = sendBlobCallback;
     function convertToMeters(table) {
-        table.forEach(function (elem, idx) {
-            table[idx] = toM(elem);
-        })
+        for (var index in table) {
+            if (table.hasOwnProperty(index)) {
+                var attr = table[index];
+                table[index] = toM(attr);
+            }
+        }
     }
 
     convertToMeters(GlobalCoordinateTable);
