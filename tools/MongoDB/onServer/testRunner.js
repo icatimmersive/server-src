@@ -62,7 +62,7 @@ io.on('connection', function (webSocket) {
         MongoClient.connect(url, function (err, db) {
             assert.equal(null, err);
             console.log("Connected correctly to MongoDB.");
-            db = globalDB;
+            globalDB = db;
         });
     });
 
