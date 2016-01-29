@@ -33,7 +33,7 @@ var sampleNewData = {
 };
 
 var assert = require('chai').assert; //using the chai libraries for all of the assert/expect/should
-var server = require("../demoServer");
+var server = require("../server");
 var net = require('net');
 var matlabSender;
 var client = require('socket.io-client')('http://localhost:8888');
