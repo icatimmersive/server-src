@@ -1,0 +1,10 @@
+This is an example file to show client functionality to the server and how to hook into the server.
+This requires nodejs to run.
+
+you should first npm install to get the proper dependencies after you have nodejs/npm
+
+
+and use this example as:
+node simple_listener.js
+
+while the server is running on localhost

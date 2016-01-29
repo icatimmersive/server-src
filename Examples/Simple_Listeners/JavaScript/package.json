@@ -1,0 +1,13 @@
+{
+  "name": "simple_listener",
+  "version": "1.0.0",
+  "description": "Tis an an emaple client in the Javascript language",
+  "main": "simple_listener.js",
+  "scripts": {
+    "run": "node simple_listener.js"
+  },
+  "author": "Eric Williamson",
+  "dependencies": {
+    "socket.io-client": "^1.4.5"
+  }
+}

@@ -1,10 +1,51 @@
-This project stores the current working implementation of the mirror worlds server
+Mirror Worlds Server
+========
 
-To install cd into server-src and npm install (to get the dependencies)
+Mirror Worlds Server exists to take allow sending a receiving of blobs describing the location of an object 
+for the Mirror worlds Project ( icat.vt.edu/impact/project/mirror-worlds ) by providing an api for listening for
+and sending blobs.
 
-The server can then be run with  
-startServer.sh
+An example client for this server can be found :
+*Link to Javascript Simple Listener Here*
+
+Features
+--------
+
+- Bidirectional communication of location data
+- Transformation from local into a global corrdinate system
+- restart on a software crash 
+
+Installation
+------------
+
+The mirror worlds server requires node-js to run and had additional dependencies to be installed
+
+Install the dependencies by running:
+
+    npm install
+    
+in the root directory.
 
 
-the server can then be stopped with
-stopServer.sh
+Running
+-------
+
+Once the dependencies are installed the server can be run with
+
+    startServer.sh
+
+and stopped with
+
+    stopServer.sh
+
+Contribute
+----------
+
+- Issue Tracker: github.com/MirrorWorldsVT/server-src/issues
+- Source Code: github.com/MirrorWorldsVT/server-src
+
+Support
+-------
+
+If you are having issues, please let us know.
+We have a mailing list located at: ericrw96@vt.edu or nuoma@vt.edu
