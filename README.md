@@ -2,17 +2,16 @@ Mirror Worlds Server
 ========
 
 Mirror Worlds Server exists to take allow sending a receiving of blobs describing the location of an object 
-for the Mirror worlds Project ( icat.vt.edu/impact/project/mirror-worlds ) by providing an api for listening for
+for the [Mirror Worlds Project] ( icat.vt.edu/impact/project/mirror-worlds ) by providing an api for listening for
 and sending blobs.
 
-An example client for this server can be found :
-*Link to Javascript Simple Listener Here*
-
+An example client for this server can be found under [examples]
+(github.com/MirrorWorldsVT/server-src/tree/master/Examples/Simple_Listeners):
 Features
 --------
 
 - Bidirectional communication of location data
-- Transformation from local into a global corrdinate system
+- Transformation from local into a global coordinate system
 - restart on a software crash 
 
 Installation
