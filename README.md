@@ -48,3 +48,8 @@ Support
 
 If you are having issues, please let us know.
 We have a mailing list located at: ericrw96@vt.edu or nuoma@vt.edu
+
+
+More Information
+----------------
+For more details of the server functionality you can see the [Confluence Documentation](https://webapps.es.vt.edu/confluence/display/ICATVT/Networking)
