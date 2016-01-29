@@ -47,7 +47,7 @@ Support
 -------
 
 If you are having issues, please let us know.
-We have a mailing list located at: ericrw96@vt.edu or nuoma@vt.edu
+We can be contacted at: ericrw96@vt.edu or nuoma@vt.edu
 
 
 More Information
