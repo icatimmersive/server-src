@@ -3,7 +3,7 @@
  * from their node-js library.
  */
 // Need the Socket.io client library from npm listed in the package.json
-var socket = require('socket.io-client')('http://localhost');
+var socket = require('socket.io-client')('http://localhost:8888');
 socket.emit('start', {connectionType: 'LISTENER'}); //We are telling the server we will listen for blobs
 
 socket.on('connect', function () {
