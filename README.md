@@ -2,11 +2,11 @@ Mirror Worlds Server
 ========
 
 Mirror Worlds Server exists to take allow sending a receiving of blobs describing the location of an object 
-for the [Mirror Worlds Project] ( icat.vt.edu/impact/project/mirror-worlds ) by providing an api for listening for
+for the [Mirror Worlds Project] ( https://icat.vt.edu/impact/project/mirror-worlds ) by providing an api for listening for
 and sending blobs.
 
 An example client for this server can be found under [examples]
-(github.com/MirrorWorldsVT/server-src/tree/master/Examples/Simple_Listeners):
+(https://github.com/MirrorWorldsVT/server-src/tree/master/Examples/Simple_Listeners):
 Features
 --------
 
