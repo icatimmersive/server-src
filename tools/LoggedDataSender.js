@@ -39,7 +39,7 @@ rl.on('line', function (line) {
 });
 rl.on('close', function () {
     console.log('We have ' + blobList.length + ' blobs read');
-    //sendData();
+    sendData();
 });
 
 function sendData() {
