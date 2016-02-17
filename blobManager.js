@@ -65,7 +65,7 @@ function makeCoordinateGlobal(data, table) {
     if (area.hasOwnProperty('invalid')) {
         //we have a bad camera ID
         console.log('Did not have cameraID:' + cameraId);
-        return area;
+        return data;
     }
     var xM = origx / imageWidth * area.width;
     var zM = origy / imageHeight * area.height;

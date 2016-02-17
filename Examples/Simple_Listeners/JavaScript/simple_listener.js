@@ -4,7 +4,13 @@
  */
 // Need the Socket.io client library from npm listed in the package.json
 var socket = require('socket.io-client')('http://localhost:8888'); // to connect to the live server the address is dev.mirrorworlds.icat.vt.edu
-socket.emit('start', {connectionType: 'LISTENER'}); //We are telling the server we will listen for blobs
+socket.emit('start', {connectionType: 'LISTENER'}); //We are telling the server we will listen for all blobs
+/*
+ If we wanted to listen for specific camera ids we need to populate a reqCameras field with an array of ids
+ Example:
+ socket.emit('start', {connectionType: 'LISTENER', reqCameras: [0,1,2]}); //will subscript to cameras 0,1,and 2
+ */
+
 
 /**
  * This will inform the user when the connection to the server occurs to help diagnose between
@@ -35,7 +41,7 @@ socket.on('newBlob', function (blob) {
  * an updateBlob event will be sent when an existing blobs has updated coordinates to notify of those changes.
  */
 socket.on('updateBlob', function (blob) {
-    //console.log('updateBlob');
+    //console.log('updateBlob' + JSON.stringify(blob));
     //logging update blobs may spit out too much to the console to be readable so it is commented out for now
 });
 /**

@@ -4,24 +4,26 @@
 var io = require('socket.io')(8888);
 var net = require("net");
 var bm = require('./blobManager');
-
 processCallback = function (data) {
 
     if (data.age == 'OLD') {
-        io.emit("updateBlob", data);
+        io.in('all').emit("updateBlob", data);
+        io.in(data.cameraID).emit("updateBlob", data);
     }
     else if (data.age == 'LOST') {
-        io.emit("removeBlob", data);
+        io.in('all').emit("removeBlob", data);
+        io.in(data.cameraID).emit("removeBlob", data);
     }
     else if (data.age == 'NEW') {
-        io.emit("newBlob", data);
+        io.in('all').emit("newBlob", data);
+        io.in(data.cameraID).emit("newBlob", data);
     }
 };
 var manager = new bm(processCallback);
 
 var tcpServer = net.createServer(function (socket) {
     console.log('TCP client connected');
-    startCallback({"connectionType": "DATASOURCE", "id": "TCP"});
+    startCallback({"connectionType": "DATASOURCE", "id": "TCP"}, null);
     var firstPartStr = null;
     socket.on('data', function (blobString) {
         var dataSplit = blobString.toString().trim().split('&');
@@ -70,7 +72,9 @@ tcpServer.listen(9999);
 
 io.on('connection', function (webSocket) {
 
-    webSocket.once("start", startCallback);
+    webSocket.once("start", function (data) {
+        startCallback(data, webSocket);
+    });
 
     webSocket.on("new", newCallback);
 
@@ -92,23 +96,45 @@ var checkBlobJSON = function (data) {
 };
 
 
-var startCallback = function (data) {
+var startCallback = function (data, webSocket) {
     if (data.connectionType && data.id !== null) {
         console.log("Starting new connection: " + JSON.stringify(data));
+        switch (data.connectionType) {
+            case "DATASOURCE":
+            {
+                console.log("New datasource with id: " + data.id);
+                io.emit("addSource", data);
+                break;
+            }
+            case "LISTENER":
+            {
+                console.log("New listener with id: " + data.id);
+                break;
+            }
+            case "TWOWAY":
+            {
+                console.log("New two way connection with id: " + data.id);
+                io.emit("addSource", data);
+                break;
+            }
+            default:
+            {
+                console.log("Invalid connection type: " + JSON.stringify(data))
+            }
+        }
+        if (data.hasOwnProperty('reqCameras')) {
+            //we now add this blob to the lists
+            for (var i = 0; i < data['reqCameras'].length; i++) {
+                webSocket.join(data['reqCameras'][i]);
+                console.log('joined room: ' + data['reqCameras'][i]);
+            }
 
-        if (data.connectionType === "DATASOURCE") {
-            console.log("New blob with id: " + data.id);
-            io.emit("addSource", data);
-        }
-        else if (data.connectionType === "LISTENER") {
-            console.log("New listener with id: " + data.id);
-        }
-        else if (data.connectionType === "TWOWAY") {
-            console.log("New two way connection with id: " + data.id);
-            io.emit("addSource", data);
         }
         else {
-            console.log("Invalid connection type: " + JSON.stringify(data))
+            if (webSocket) {
+                console.log('joining room as all');
+                webSocket.join('all');
+            }
         }
     }
     else {
