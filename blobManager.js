@@ -44,12 +44,29 @@ function BlobManager(sendBlobCallback) {
         for (var index in table) {
             if (table.hasOwnProperty(index)) {
                 var attr = table[index];
+                if (attr.theta == 'Math.PI') {
+                    attr.theta = Math.PI;
+                }
+                else {
+                    attr.theta = Number(attr.theta);
+                }
                 table[index] = toM(attr);
             }
         }
     }
 
-    convertToMeters(GlobalCoordinateTable);
+
+    var fs = require('fs');
+    var csv = require('csv');
+    var parser = csv.parse({delimiter: ',', 'columns': true, 'objname': "cameraID"},
+        function (err, data) {
+            if (err) throw err;
+            convertToMeters(data);
+            GlobalCoordinateTable = data;
+            console.log(GlobalCoordinateTable)
+        });
+    fs.createReadStream('./cameraSettings/cameraSettings.csv').pipe(parser);
+
 }
 
 function makeCoordinateGlobal(data, table) {
