@@ -36,7 +36,8 @@ var sampleData = {
         "width": 5,
         "height": 5
     },
-    cameraID: 1
+    cameraID: 1,
+    makeGlobal: false
 };
 simpleStringify = function (object) {
     var simpleObject = {};
