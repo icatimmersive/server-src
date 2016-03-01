@@ -83,6 +83,10 @@ io.on('connection', function (webSocket) {
     webSocket.on("remove", removeCallback);
 
     webSocket.once("disconnect", disconnectCallback);
+
+    webSocket.on("reload", function () {
+        manager.reloadTable();
+    });
 });
 
 var checkBlobJSON = function (data) {

@@ -36,6 +36,10 @@ Once the dependencies are installed the server can be run with
 and stopped with
 
     stopServer.sh
+    
+The server can also be run for testing with
+
+    node server.js
 
 Contribute
 ----------

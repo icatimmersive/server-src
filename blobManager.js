@@ -8,108 +8,13 @@
  */
 
 var method = BlobManager.prototype;
-var GlobalCoordinateTable = {
-            //observation room camera
-        1: {x: 0.0, y: 0.0, z: -24.0, width: 24.0, height: 19.0, theta: Math.PI},
-
-	     //learning lab 1st camera
-        2: {x: 0.0, y: 0.0, z: 0.0, width: 24.0, height: 16.0, theta: 0.0},
-
-	    //learning lab 2nd camera
-        3: {x: -16.0, y: 0.0, z: 0.0, width: 24.0, height: 16.0, theta: 0.0},
-
-	    //learning lab 3rd camera
-        4: {x: -48.0, y: 0.0, z: -24.0, width: 24.0, height: 16.0, theta: Math.PI},
-
-	    //learning lab 4th camera
-    5: {x: -64.0, y: 0.0, z: -24.0, width: 24.0, height: 19.0, theta: Math.PI},
-
-
-    6: {x: 19.0, y: 0.0, z: 6.0, width: 6.0, height: 19.0, theta: 0.0},
-
-    7: {x: 0.0, y: 0.0, z: 6.0, width: 6.0, height: 16.0, theta: 0.0},
-
-    8: {x: -16.0, y: 0.0, z: 6.0, width: 6.0, height: 16.0, theta: 0.0},
-
-    9: {x: -32.0, y: 0.0, z: 6.0, width: 6.0, height: 16.0, theta: 0.0},
-
-    10: {x: -48.0, y: 0.0, z: 6.0, width: 6.0, height: 16.0, theta: 0.0}
-};
-
-
 
 function BlobManager(sendBlobCallback) {
     this.callback = sendBlobCallback;
-    function convertToMeters(table) {
-        for (var index in table) {
-            if (table.hasOwnProperty(index)) {
-                var attr = table[index];
-                table[index] = toM(attr);
-            }
-        }
-    }
-
-    convertToMeters(GlobalCoordinateTable);
+    var GlobalCoordinate = require("./globalCoordinate");
+    console.log("NEXT STEP");
+    this.coordinateConverter = new GlobalCoordinate("./cameraSettings/cameraSettings.csv");
 }
-
-function makeCoordinateGlobal(data, table) {
-
-    var origx = data.origin.x;
-    var origy = data.origin.y;
-    var origz = data.origin.z;
-    var imageWidth = data.boundingBox.image_width;
-    var imageHeight = data.boundingBox.image_height;
-    var cameraId = data.cameraID;
-
-    var area = getRect(cameraId, table);
-    if (area.hasOwnProperty('invalid')) {
-        //we have a bad camera ID
-        console.log('Did not have cameraID:' + cameraId);
-        return area;
-    }
-    var xM = origx / imageWidth * area.width;
-    var zM = origy / imageHeight * area.height;
-
-    var sin = Math.sin(area.theta);
-    var cos = -Math.cos(area.theta);
-
-    var globalXM = xM * sin + zM * cos + area.x;
-    var globalZM = xM * cos + zM * sin + area.z;
-    var globalYM = area.y + .5;
-
-    data.origin.x = globalXM;
-    data.origin.y = globalYM;
-    data.origin.z = globalZM;
-    return data;
-}
-
-//Coordinate system definitions
-//They are defined in ft for ease because blueprints are in ft
-//convert to meters at end of function.
-function getRect(cameraId, table) {
-  //  console.log(cameraId);
-    if (!table.hasOwnProperty(cameraId)) {
-        return {'invalid': true};
-    }
-    return table[cameraId];
-    //console.log(JSON.stringify(r));
-    //r = toM(r);
-}
-
-var M_PER_FT = .3048;
-function toM(rect) {
-    rect.x *= M_PER_FT;
-//    console.log(rect.x);
-    rect.y *= M_PER_FT;
-    rect.z *= M_PER_FT;
-    //console.log(rect.z);
-    rect.width *= M_PER_FT;
-    rect.height *= M_PER_FT;
-    return rect;
-    //theta is same
-}
-
-
 
 function placeInTable(blob, cameraTable) {
     var thisCID = blob.cameraID;
@@ -145,7 +50,7 @@ function processAdd(blob, callback) {
 }
 
 method.processBlob = function (blob) {
-    blob = makeCoordinateGlobal(blob, GlobalCoordinateTable);
+    blob = this.coordinateConverter.makeGlobal(blob);
     if (blob.hasOwnProperty('invalid')) {
         //we are done, do not send this blob
         return;
@@ -159,6 +64,10 @@ method.processBlob = function (blob) {
     else {
         processAdd(blob, this.callback)
     }
+};
+
+method.reloadTable = function () {
+    this.coordinateConverter.reloadCSV();
 };
 
 module.exports = BlobManager;
