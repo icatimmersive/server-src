@@ -10,7 +10,9 @@ socket.emit('start', {connectionType: 'LISTENER'}); //We are telling the server 
  Example:
  socket.emit('start', {connectionType: 'LISTENER', reqCameras: [0,1,2]}); //will subscript to cameras 0,1,and 2
  */
-
+/*
+ you can also only receive the blobs without the global transformation by adding the local: true field to your spec
+ */
 
 /**
  * This will inform the user when the connection to the server occurs to help diagnose between

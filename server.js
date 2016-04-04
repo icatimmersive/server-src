@@ -135,10 +135,17 @@ var startCallback = function (data, webSocket) {
 
         }
         else {
-            if (webSocket) {
-                console.log('joining room as all');
-                webSocket.join('all');
+            if (data.hasOwnProperty('local')) {
+                console.log('joining local rooms');
+                webSocket.join('local')
             }
+            else {
+                if (webSocket) {
+                    console.log('joining room as all');
+                    webSocket.join('all');
+                }
+            }
+
         }
     }
     else {
@@ -152,6 +159,7 @@ var newCallback = function (data) {
             console.log("Listener sent a 'new' update: " + JSON.stringify(data));
         }
         else if (data.connectionType === "DATASOURCE" || data.connectionType === "TWOWAY") {
+            io.in('local').emit("newBlob", data);
             manager.processBlob(data)
         }
         else {
@@ -169,6 +177,7 @@ var updateCallback = function (data) {
             console.log("Listener sent an update: " + JSON.stringify(data));
         }
         else if (data.connectionType === "DATASOURCE" || data.connectionType === "TWOWAY") {
+            io.in('local').emit("updateBlob", data);
             manager.processBlob(data)
         }
         else {
@@ -186,6 +195,7 @@ var removeCallback = function (data) {
             console.log("Listener sent a 'remove' update: " + JSON.stringify(data));
         }
         else if (data.connectionType === "DATASOURCE" || data.connectionType === "TWOWAY") {
+            io.in('local').emit("removeBlob", data);
             manager.processBlob(data);
         }
         else {
