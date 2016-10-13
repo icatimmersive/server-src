@@ -4,6 +4,9 @@
 var io = require('socket.io')(8888);
 var net = require("net");
 var bm = require('./blobManager');
+var PingGame = require('./ping_game');
+
+var pg = new PingGame(io);
 processCallback = function (data) {
 
     if (data.age == 'OLD') {
@@ -85,6 +88,7 @@ io.on('connection', function (webSocket) {
     webSocket.once("disconnect", disconnectCallback);
 
     webSocket.on("reload", function () {
+        console.log('recieved a reload signal');
         manager.reloadTable();
     });
 });

@@ -17,6 +17,7 @@ method.reloadCSV = function () {
     var fs = require('fs');
     var csv = require('csv');
     var setTable = function (err, data) {
+        console.log('reloading table');
         convertToMeters(data);
         GlobalTable.GlobalCoordinateTable = data;
         console.log(GlobalTable.GlobalCoordinateTable)
@@ -60,7 +61,7 @@ function makeCoordinateGlobal(data, table) {
     var area = getRect(cameraId, table);
     if (area.hasOwnProperty('invalid')) {
         //we have a bad camera ID
-        console.log('Did not have cameraID in csv.' + cameraId);
+        //console.log('Did not have cameraID in csv.' + cameraId);
         return data;
     }
     var xM = origx / imageWidth * area.width;
@@ -70,7 +71,7 @@ function makeCoordinateGlobal(data, table) {
     var cos = -Math.cos(area.theta);
 
     var globalXM = xM * sin + zM * cos + area.x;
-    var globalZM = xM * cos + zM * sin + area.z;
+    var globalZM = xM * cos + -zM * sin + area.z;//negate zM here
     var globalYM = area.y + .5;
 
     data.origin.x = globalXM;
@@ -84,7 +85,7 @@ function makeCoordinateGlobal(data, table) {
 //convert to meters at end of function.
 function getRect(cameraId, table) {
     if (!table.hasOwnProperty(cameraId.toString())) {
-        console.log(table);
+       // console.log(table);
         return {'invalid': true};
     }
     return table[cameraId.toString()];
