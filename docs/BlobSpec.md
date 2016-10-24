@@ -16,7 +16,7 @@ The fields of the JSON object are specified below
 
 > - id < int > Will identify the blob uniquely for each specific camera so that blobs can be updated correctly
 > - cameraID < int > Will tell a client which camera has reported this blob. Together with the id this can uniquely identify a blob.
-> -  origin < JSON Object> will hold the x, y, and z coordinates of where this blob is located.
+> -  Position < JSON Object> will hold the x, y, and z coordinates of where this blob is located.
 >  - x < float > the x coordinate
 >  - y < float > the y coordinate
 >  - z < float > the z coordinate
