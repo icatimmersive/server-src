@@ -3,7 +3,7 @@
  * from their node-js library.
  */
 // Need the Socket.io client library from npm listed in the package.json
-var socket = require('socket.io-client')('http://localhost:8888'); // to connect to the live server the address is dev.mirrorworlds.icat.vt.edu
+var socket = require('socket.io-client')('http://localhost:9998'); // to connect to the live server the address is dev.mirrorworlds.icat.vt.edu
 socket.emit('start', {connectionType: 'DATASOURCE'}); //We are telling the server we will be sending blobs
 /* We could also subscribe as a TWOWAY with specific camera IDS if we wanted to also receive blobs */
 /**

@@ -164,6 +164,7 @@ var newCallback = function (data) {
         }
         else if (data.connectionType === "DATASOURCE" || data.connectionType === "TWOWAY") {
             io.in('local').emit("newBlob", data);
+	    console.log(data);
             manager.processBlob(data)
         }
         else {

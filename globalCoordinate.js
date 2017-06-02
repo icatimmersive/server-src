@@ -17,6 +17,7 @@ method.reloadCSV = function () {
     var fs = require('fs');
     var csv = require('csv');
     var setTable = function (err, data) {
+	console.log(err);
         console.log('reloading table');
         convertToMeters(data);
         GlobalTable.GlobalCoordinateTable = data;
